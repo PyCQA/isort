@@ -148,6 +148,17 @@ def test_known_pattern_directory_with_forward_slash(tmp_path: Path) -> None:
     assert place_module("baz", config=config) == "PLUGINS"
 
 
+def test_known_pattern_with_escaped_dot_is_kept(tmp_path: Path) -> None:
+    """Only directory entries get "/" separators: a backslash in a module pattern
+    escapes a regex character, also on Windows.
+    """
+    (tmp_path / ".isort.cfg").write_text("[isort]\nknown_first_party = foo\\.bar\n", "utf8")
+
+    config = Config(settings_path=str(tmp_path))
+    assert config.known_first_party == frozenset({"foo\\.bar"})
+    assert place_module("foo.bar", config=config) == "FIRSTPARTY"
+
+
 def _write_simple_settings(tmp_file: Path) -> None:
     tmp_file.write_text(
         """

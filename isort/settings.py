@@ -702,7 +702,7 @@ class Config(_Config):
 
     def _parse_known_pattern(self, pattern: str) -> list[str]:
         """Expand pattern if identified as a directory and return found sub packages"""
-        pattern = _as_posix_path(pattern)
+        pattern = _as_posix_directory(pattern)
         if pattern.endswith("/"):
             patterns = [
                 filename
@@ -734,6 +734,17 @@ def _as_posix_path(path: str) -> str:
     return path.replace(os.path.sep, "/")
 
 
+def _as_posix_directory(value: str) -> str:
+    """Use "/" as the separator in a known_* entry that names a directory (ends with a separator).
+
+    Other entries are module patterns, where a backslash escapes a regex character
+    (`foo\\.bar`), so they are left as they are.
+    """
+    if value.endswith(("/", os.path.sep)):
+        return _as_posix_path(value)
+    return value
+
+
 def _abspaths(cwd: str, values: Iterable[str]) -> set[str]:
     paths = {
         (
@@ -741,7 +752,7 @@ def _abspaths(cwd: str, values: Iterable[str]) -> set[str]:
             if not value.startswith("/") and value.endswith("/")
             else value
         )
-        for value in map(_as_posix_path, values)
+        for value in map(_as_posix_directory, values)
     }
     return paths
 
