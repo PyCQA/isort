@@ -250,17 +250,17 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         nested_comments[stripped_line] = extra_line.comment
 
             if ";" in import_string.split("#")[0] and ";" not in statement.split("#")[0]:
-                # A continuation line introduced a semicolon, so this is not a
-                # plain import construct: emit it unchanged instead of
-                # parsing post-semicolon code as import names (issue 1918).
-                if len(statements) == 1:
-                    out_lines.extend(in_lines[statement_index - 1 : index])
+                if statement.split("#", 1)[0].rstrip().endswith("\\"):
+                    import_string, _, trailing_code = import_string.partition(";")
+                    if trailing_code.strip():
+                        out_lines.append(trailing_code.strip())
                 else:
-                    # Later piece of a semicolon-split first line: only its own
-                    # text plus the verbatim continuation lines belong to it.
-                    out_lines.append(raw_lines[0])
-                    out_lines.extend(in_lines[statement_index:index])
-                continue
+                    if len(statements) == 1:
+                        out_lines.extend(in_lines[statement_index - 1 : index])
+                    else:
+                        out_lines.append(raw_lines[0])
+                        out_lines.extend(in_lines[statement_index:index])
+                    continue
 
             if import_index == -1:
                 import_index = statement_index - 1
