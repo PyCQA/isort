@@ -3248,3 +3248,31 @@ def test_aliased_import_with_an_opening_line_comment_stays_within_line_length_is
     # also with a type: ignore comment
     expected = expected.replace("# noqa: N813", "# type: ignore[attr-defined]")
     assert isort.code(expected, profile="black") == expected
+
+
+def test_trailing_comma_on_aliased_only_import_does_not_explode_plain_imports_issue_2793() -> None:
+    """A trailing comma recorded on an alias-only statement exploded the module's plain imports.
+
+    The aliased import is written as its own statement, so its trailing comma (added by isort
+    itself when wrapping) must not force ``from requests import Z`` onto multiple lines.
+    """
+    first_pass = isort.code(
+        "from requests import long_name_here as long_name_here2, Z\n",
+        profile="black",
+        line_length=40,
+    )
+    assert first_pass == (
+        "from requests import Z\n"
+        "from requests import (\n"
+        "    long_name_here as long_name_here2,\n"
+        ")\n"
+    )
+    assert isort.code(first_pass, profile="black", line_length=40) == first_pass
+    # A trailing comma on a statement that does import the plain name still splits it.
+    assert isort.code("from requests import (a as b, Z,)\n", profile="black") == (
+        "from requests import (\n    Z,\n)\nfrom requests import a as b\n"
+    )
+    # So does a trailing comma on a redundant alias that is written as a plain import.
+    assert isort.code(
+        "from requests import (Z as Z,)\n", profile="black", remove_redundant_aliases=True
+    ) == ("from requests import (\n    Z,\n)\n")
