@@ -63,6 +63,20 @@ def _has_skip_comment(import_statement: str) -> bool:
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
+def _import_statement_complete(lines: list[str]) -> bool:
+    """Return whether collected physical lines form a complete import statement.
+
+    A parenthesized statement spans several physical lines. Comments are stripped
+    per line before checking, since they are not part of the statement itself.
+    Import statements contain no string literals, so ``#`` and parentheses cannot
+    appear inside one. A backslash continuation cannot carry a same-line
+    ``isort: skip`` comment (the backslash must be the line's final character),
+    so only parenthesis balance matters here.
+    """
+    code = "".join(line.split("#", 1)[0] for line in lines)
+    return code.count("(") <= code.count(")")
+
+
 class _FloatToTopResult(NamedTuple):
     input_stream: TextIO
     verbose_output: list[str]
@@ -510,8 +524,31 @@ def process(
 
             if import_section:
                 if add_imports and (contains_imports or not config.append_only) and not indent:
+                    # A leading per-line ``isort: skip`` import was collected into the
+                    # section before any other import set ``contains_imports`` (the
+                    # section-boundary guard only applies once that is True). Prepending
+                    # the added imports ahead of it would move the sorted block's
+                    # insertion point in front of the skipped line and relocate it below
+                    # the block, violating the directive. Keep leading skipped imports
+                    # first instead. See #1962.
+                    section_lines = import_section.splitlines(keepends=True)
+                    leading_skipped: list[str] = []
+                    while section_lines and _has_skip_comment(section_lines[0]):
+                        leading_skipped.append(section_lines.pop(0))
+                        # A parenthesized or backslash-continued skipped statement
+                        # spans several physical lines; keep them together.
+                        while section_lines and not _import_statement_complete(leading_skipped):
+                            leading_skipped.append(section_lines.pop(0))
+                    prefix = "".join(leading_skipped)
+                    if prefix and not prefix.endswith(("\r", "\n")):
+                        # The file did not end in a newline; the skipped line needs
+                        # one before the added imports follow it.
+                        prefix += line_separator
                     import_section = (
-                        line_separator.join(add_imports) + line_separator + import_section
+                        prefix
+                        + line_separator.join(add_imports)
+                        + line_separator
+                        + "".join(section_lines)
                     )
                     contains_imports = True
                     add_imports = []
