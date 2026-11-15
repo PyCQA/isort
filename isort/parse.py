@@ -101,7 +101,11 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     as_map: dict[str, dict[str, list[str]]] = {
         "straight": defaultdict(list),
         "from": defaultdict(list),
+        # Keep individual aliases in encounter order when inline sorting is disabled.
+        "from_order": {},
+        "lazy_from_order": {},
     }
+    from_order_seen: dict[tuple[bool, str], set[str]] = {}
     imports: OrderedDict[str, ParsedImports] = OrderedDict()
     verbose_output: list[str] = []
 
@@ -266,6 +270,27 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 item.replace("{|", "{ ").replace("|}", " }")
                 for item in strip_syntax(import_string).split()
             ]
+
+            if (
+                type_of_import is _ImportType.FROM
+                and just_imports
+                and (config.no_inline_sort or config.only_sections)
+            ):
+                order_key = "lazy_from_order" if is_lazy else "from_order"
+                ordered_names = as_map[order_key].setdefault(just_imports[0], [])
+                seen_names = from_order_seen.setdefault((is_lazy, just_imports[0]), set())
+                position = 1
+                while position < len(just_imports):
+                    name = just_imports[position]
+                    if position + 2 < len(just_imports) and just_imports[position + 1] == "as":
+                        alias = just_imports[position + 2]
+                        if not (config.remove_redundant_aliases and name == alias):
+                            name = f"{name} as {alias}"
+                        position += 2
+                    if name not in seen_names:
+                        ordered_names.append(name)
+                        seen_names.add(name)
+                    position += 1
 
             attach_comments_to: list[str] | None = None
             direct_imports = just_imports[1:]

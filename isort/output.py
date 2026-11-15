@@ -20,6 +20,19 @@ def _unwrap_for_sort(line: str) -> str:
     return " ".join(code.translate(_WRAP_CHARS_TRANSLATION).split())
 
 
+def _comment_kinds(comments: Iterable[str]) -> tuple[set[str], bool]:
+    pragmas = set()
+    has_explanation = False
+    for comment in comments:
+        for part in comment.split(";"):
+            part = part.strip()
+            if part.lower().startswith(("noqa", "type: ignore")):
+                pragmas.add(part)
+            elif part:
+                has_explanation = True
+    return pragmas, has_explanation
+
+
 # Ignore DeepSource cyclomatic complexity check for this function.
 # skipcq: PY-R1000
 def sorted_imports(
@@ -293,12 +306,31 @@ def _build_import_group(
             else:
                 new_group_output.append(line)
         # only_sections option is not imposed if force_sort_within_sections is True
+        original_group_output = new_group_output
         new_group_output = sorting.sort(
             config,
             new_group_output,
             key=lambda line: sorting.section_key(_unwrap_for_sort(line), config=config),
             reverse=config.reverse_sort,
         )
+        # A module split over commented statements must retain their relative order: the
+        # parser associates opening-line comments with the first statement for the module.
+        module_lines: dict[str, list[str]] = {}
+        for line in original_group_output:
+            unwrapped = _unwrap_for_sort(line)
+            if unwrapped.startswith(("from ", "lazy from ")) and " import " in unwrapped:
+                module = unwrapped.split(" import ", 1)[0]
+                module_lines.setdefault(module, []).append(line)
+        preserved_lines = {
+            module: iter(lines)
+            for module, lines in module_lines.items()
+            if len(lines) > 1 and any("#" in line for line in lines)
+        }
+        for index, line in enumerate(new_group_output):
+            unwrapped = _unwrap_for_sort(line)
+            module = unwrapped.split(" import ", 1)[0]
+            if module in preserved_lines:
+                new_group_output[index] = next(preserved_lines[module])
         # uncollapse comments
         group_output = []
         for line in new_group_output:
@@ -502,6 +534,7 @@ def _build_grouped_from_imports(
             and len(imports) == 1
             and not has_noqa_comment
             and not preserve_comments_on_statement_line
+            and config.multi_line_output != wrap_modes.WrapModes.NOQA
         ):
             return wrap.line(import_statement, parsed.line_separator, config)
 
@@ -721,6 +754,28 @@ def _with_from_imports_for_module(
     # statement to the first statement for the module, unless the statement imports a single name
     # on one line. Only the first statement may therefore group names that carry their own comment;
     # each later statement keeps a single commented name on one line.
+    preserve_order = (config.no_inline_sort or config.only_sections) and bool(
+        comments
+        or parsed.categorized_comments["nested"].get(module)
+        or parsed.categorized_comments["from"].get(f"{module}.__combined_as__")
+    )
+    order_key = "lazy_from_order" if import_key == "lazy_from" else "from_order"
+    module_order = parsed.as_map.get(order_key, {}).get(module)
+    if preserve_order and not only_show_as_imports and module_order is not None:
+        module_imports = parsed.imports[section][import_key][module]
+        available_imports = set(from_imports)
+        ordered_imports = []
+        for name in module_order:
+            if " as " in name:
+                base = name.split(" as ", 1)[0]
+                if name in available_imports or (
+                    base in available_imports and name in as_imports.get(base, [])
+                ):
+                    ordered_imports.append(name)
+            elif name in available_imports and (name not in as_imports or module_imports[name]):
+                ordered_imports.append(name)
+        from_imports = ordered_imports
+        as_imports = {}
     first_statement = True
     while from_imports:
         # Tracks whether any aliased imports were emitted before the grouped
@@ -744,6 +799,24 @@ def _with_from_imports_for_module(
 
         while from_imports:
             from_import = from_imports.pop(0)
+            if preserve_order and not config.combine_as_imports and " as " in from_import:
+                base = from_import.split(" as ", 1)[0]
+                processed_as_imports_this_iteration = True
+                output.extend(
+                    _build_as_imports(
+                        from_import=base,
+                        as_imports=[from_import],
+                        import_start=import_start,
+                        line_separator=parsed.line_separator,
+                        config=config,
+                        straight_comments=parsed.categorized_comments["straight"].pop(
+                            f"{module}.{base}", []
+                        ),
+                        nested_comments=nested_comments,
+                        include_straight_import=False,
+                    )
+                )
+                continue
             if from_import in as_imports:
                 if not module_imports[from_import]:
                     if only_show_as_imports:
@@ -778,31 +851,48 @@ def _with_from_imports_for_module(
             if comment is not None:
                 comments.append(comment)
 
-            statement_comments = [*comments, *combined_as_comments]
-            pragma_comments = {
-                c for c in statement_comments if c.lower().startswith(("noqa", "type: ignore"))
-            }
-            has_explanatory_comments = any(
-                c and not c.lower().startswith(("noqa", "type: ignore")) for c in statement_comments
+            pragma_comments, has_explanatory_comments = _comment_kinds(
+                [*comments, *combined_as_comments]
             )
             for grouped_plain_import in from_imports[:]:
+                if preserve_order and aliased_from_imports:
+                    break
+                if (
+                    preserve_order
+                    and not config.combine_as_imports
+                    and " as " in grouped_plain_import
+                ):
+                    break
                 grouped_comment = nested_comments.get(grouped_plain_import)
-                if grouped_comment:
-                    if not first_statement:
-                        continue
-                    grouped_is_pragma = grouped_comment.lower().startswith(("noqa", "type: ignore"))
-                    if grouped_is_pragma and (
-                        has_explanatory_comments
-                        or (pragma_comments and grouped_comment not in pragma_comments)
-                        or grouped_comment.lower().startswith("type: ignore")
+                grouped_pragmas, grouped_has_explanation = _comment_kinds(
+                    [grouped_comment] if grouped_comment else []
+                )
+                incompatible = bool(grouped_comment) and (
+                    not first_statement
+                    or (
+                        bool(grouped_pragmas)
+                        and (
+                            has_explanatory_comments
+                            or bool(pragma_comments - grouped_pragmas)
+                            or any(p.lower().startswith("type: ignore") for p in grouped_pragmas)
+                        )
+                    )
+                    or (grouped_has_explanation and bool(pragma_comments))
+                )
+                if incompatible:
+                    if preserve_order or any(
+                        name in as_imports or " as " in name for name in from_imports
                     ):
-                        continue
-                    if not grouped_is_pragma and pragma_comments:
-                        continue
+                        break
+                    continue
+                if not first_statement and comments:
+                    break
 
                 include_grouped_import = grouped_plain_import in as_imports and not (
                     module_imports[grouped_plain_import] and not only_show_as_imports
                 )
+                if preserve_order and include_grouped_import:
+                    break
                 if include_grouped_import:
                     aliased_from_imports.append(grouped_plain_import)
                     from_imports.remove(grouped_plain_import)
@@ -815,10 +905,8 @@ def _with_from_imports_for_module(
                 grouped_comment = nested_comments.pop(grouped_plain_import, None)
                 if grouped_comment is not None:
                     comments.append(grouped_comment)
-                    if grouped_comment.lower().startswith(("noqa", "type: ignore")):
-                        pragma_comments.add(grouped_comment)
-                    elif grouped_comment:
-                        has_explanatory_comments = True
+                    pragma_comments.update(grouped_pragmas)
+                    has_explanatory_comments |= grouped_has_explanation
 
             break
 

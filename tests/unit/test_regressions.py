@@ -3250,3 +3250,125 @@ def test_commented_from_imports_are_grouped_the_same_way_on_the_next_run() -> No
     expected = "from x import (  # noqa\n    a as aa,\n    c,\n)\nfrom x import b  # explanation\n"
     assert isort.code(test_input, profile="black", combine_as_imports=True) == expected
     assert isort.code(expected, profile="black", combine_as_imports=True) == expected
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        isort.Config(),
+        isort.Config(combine_as_imports=True),
+        isort.Config(no_inline_sort=True),
+        isort.Config(only_sections=True),
+        isort.Config(no_inline_sort=True, combine_as_imports=True),
+        isort.Config(only_sections=True, combine_as_imports=True),
+    ],
+)
+def test_commented_imports_keep_colliding_alias_order(config: isort.Config) -> None:
+    source = (
+        "from x import a  # explanation\n"
+        "from x import b  # type: ignore\n"
+        "from x import b as chosen\n"
+        "from x import c as chosen\n"
+    )
+    result = isort.code(source, config=config)
+    assert result.index("b as chosen") < result.index("c as chosen")
+    if config.no_inline_sort or config.only_sections:
+        assert result.index("import b  #") < result.index("b as chosen")
+    assert isort.code(result, config=config) == result
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        isort.Config(no_inline_sort=True),
+        isort.Config(only_sections=True),
+        isort.Config(no_inline_sort=True, combine_as_imports=True),
+        isort.Config(only_sections=True, combine_as_imports=True),
+    ],
+)
+def test_commented_imports_keep_interleaved_aliases_in_order(config: isort.Config) -> None:
+    source = (
+        "from x import a  # explanation\n"
+        "from x import b  # type: ignore\n"
+        "from x import c\n"
+        "from x import b as first\n"
+        "from x import d as second\n"
+        "from x import b as third\n"
+    )
+    result = isort.code(source, config=config)
+    assert result.index("import b  #") < result.index("import c")
+    assert result.index("import c") < result.index("b as first")
+    assert result.index("b as first") < result.index("d as second") < result.index("b as third")
+    assert isort.code(result, config=config) == result
+
+
+@pytest.mark.parametrize("no_inline_sort", [False, True])
+def test_commented_imports_remain_stable_when_section_sort_reorders_statements(
+    no_inline_sort: bool,
+) -> None:
+    source = "from x import a\nfrom x import b  # type: ignore\nfrom x import c  # noqa: F401\n"
+    config = isort.Config(
+        no_inline_sort=no_inline_sort, force_sort_within_sections=True, length_sort=True
+    )
+    result = isort.code(source, config=config)
+    if no_inline_sort:
+        assert result == source
+    else:
+        assert result == "from x import a, c  # noqa: F401\nfrom x import b  # type: ignore\n"
+    assert isort.code(result, config=config) == result
+
+
+@pytest.mark.parametrize(
+    ("source", "config"),
+    [
+        (
+            "from x import (  # pylint: disable=unused-import\n"
+            "    a,  # type: ignore[attr-defined]\n"
+            "    b,  # type: ignore[attr-defined]\n"
+            "    c,  # explanation\n"
+            ")\n",
+            isort.Config(),
+        ),
+        (
+            "from x import a as aa  # note\n"
+            "from x import b as bb  # noqa: F401\n"
+            "from x import c\n"
+            "from x import d  # note\n",
+            isort.Config(combine_as_imports=True),
+        ),
+    ],
+)
+def test_joined_pragma_comments_remain_stable(source: str, config: isort.Config) -> None:
+    result = isort.code(source, config=config)
+    assert isort.code(result, config=config) == result
+
+
+@pytest.mark.parametrize("trailing_comma", [False, True])
+def test_noqa_wrap_for_later_commented_import(trailing_comma: bool) -> None:
+    source = (
+        "from x import a  # explanation\n"
+        "from x import an_extremely_long_import_name  # noqa: F401\n"
+    )
+    config = isort.Config(
+        multi_line_output=7,
+        line_length=40,
+        include_trailing_comma=trailing_comma,
+        split_on_trailing_comma=trailing_comma,
+    )
+    result = isort.code(source, config=config)
+    assert result == (
+        "from x import a  # explanation\n"
+        "from x import an_extremely_long_import_name  # NOQA noqa: F401\n"
+    )
+    assert isort.code(result, config=config) == result
+
+
+def test_repeated_noqa_comments_group_together() -> None:
+    source = (
+        "from x import a  # noqa: F401\n"
+        "from x import b  # noqa: F401\n"
+        "from x import c  # noqa: F401\n"
+    )
+    result = "from x import a, b, c  # noqa: F401\n"
+    assert isort.code(source) == result
+    assert isort.code(result) == result
