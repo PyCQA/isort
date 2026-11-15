@@ -252,6 +252,22 @@ def test_form_feed_blank_line_not_removed_issue_2562() -> None:
     assert isort.code(test_input, lines_after_imports=2) == test_input
 
 
+@pytest.mark.parametrize(
+    "declaration", ["def f():\n    pass", "class C:\n    pass", "async def f():\n    pass"]
+)
+def test_form_feed_hidden_declaration_keeps_two_blank_lines_issue_2562(declaration: str) -> None:
+    """A form feed hoisted in front of a top level declaration must not hide it.
+
+    ``\\f`` is whitespace and resets the indentation column, so ``\\fdef f():`` is still a
+    statement declaration: it keeps ``lines_after_imports`` at 2 and the output stays
+    stable.  See: https://github.com/pycqa/isort/issues/2562
+    """
+    test_input = f"import sys\n\n\n\f\n{declaration}\n"
+    expected = f"import sys\n\n\n\f{declaration}\n"
+    assert isort.code(test_input) == expected
+    assert isort.code(expected) == expected
+
+
 def test_force_single_line_shouldnt_remove_preceding_comment_lines_issue_1296() -> None:
     """Tests to ensure force_single_line setting doesn't result in lost comments.
     See: https://github.com/pycqa/isort/issues/1296
@@ -2173,6 +2189,41 @@ attr as alias  # type: ignore[attr-defined]
     )
 
 
+def test_comment_on_opening_line_of_aliased_import_does_not_move_with_combine_as_imports() -> None:
+    """The comment of a wrapped aliased import stays on the "from ... import (" line
+    with combine_as_imports as well.
+    """
+    test_input = """\
+from a_long_name_to_enforce.splitting_across.two_lines import (  # type: ignore[attr-defined]
+    a_random_attribute as renamed_random_attribute,
+)
+"""
+    assert isort.code(test_input, profile="black", combine_as_imports=True) == test_input
+
+    single_line_input = (
+        "from a_long_name_to_enforce.splitting_across.two_lines import "
+        "a_random_attribute as renamed_random_attribute  # type: ignore[attr-defined]\n"
+    )
+    assert isort.code(single_line_input, profile="black", combine_as_imports=True) == test_input
+
+    # Without the black profile the import is not exploded.
+    test_input_no_trailing_comma = """\
+from a_long_name_to_enforce.splitting_across.two_lines import (  # type: ignore[attr-defined]
+    a_random_attribute as renamed_random_attribute
+)
+"""
+    assert (
+        isort.code(
+            test_input_no_trailing_comma,
+            use_parentheses=True,
+            multi_line_output=3,
+            line_length=88,
+            combine_as_imports=True,
+        )
+        == test_input_no_trailing_comma
+    )
+
+
 def test_sort_reexports_with_stdin_raises_error_issue_2393() -> None:
     """Ensure --sort-reexports raises a clear error when used with stdin."""
     fake_stdin = TextIOWrapper(BytesIO(b"from test import B, A\n"))
@@ -2654,21 +2705,22 @@ def test_noqa_added_to_long_as_import_with_opening_line_comment_issue_2093() -> 
     """A long ``as`` import with an opening-line comment and ``use_parentheses``.
 
     When ``use_parentheses`` is enabled and the import carries an opening-line
-    comment, the comment is attached to the first line after wrapping. In NOQA
-    mode ``wrap.line()`` is re-run on that line so ``# NOQA`` is added when it
-    still exceeds the line length. In non-NOQA modes the comment is preserved on
-    the ``from X import (`` line without ``# NOQA``.
+    comment, the comment is attached to the first line after wrapping. NOQA mode
+    never wraps in parentheses, so the comment is merged into the statement before
+    it is wrapped and ``# NOQA`` is added after it when the line is still too long.
+    In non-NOQA modes the comment is preserved on the ``from X import (`` line
+    without ``# NOQA``.
     """
     to_sort = (
         "from my_package.my_module import super_long_file_name as super_long_alias"
         "  # type: ignore\n"
     )
 
-    # NOQA mode: # NOQA is appended after the opening-line comment.
+    # NOQA mode: the opening-line comment comes first, # NOQA is appended after it.
     first_pass = isort.code(to_sort, multi_line_output=7, use_parentheses=True, line_length=40)
     assert first_pass == (
         "from my_package.my_module import super_long_file_name as super_long_alias"
-        "  # NOQA  # type: ignore\n"
+        "  # type: ignore  # NOQA\n"
     )
 
     # Non-NOQA mode (grid): the comment stays on the opening parenthesis line.
@@ -2688,6 +2740,59 @@ def test_noqa_added_to_long_as_import_with_opening_line_comment_issue_2093() -> 
     )
     assert ignored_pass == (
         "from my_package.my_module import super_long_file_name as super_long_alias  # NOQA\n"
+    )
+
+
+def test_noqa_mode_reaches_a_fixpoint_with_an_opening_line_comment() -> None:
+    """NOQA mode must not add another ``# NOQA`` marker on every pass.
+
+    The line was wrapped once by ``wrap.line()`` and once more after the
+    opening-line comment moved onto the first line, so every run added a
+    marker and the output never reached a fixpoint.
+    """
+    to_sort = (
+        "from my_package.my_module import super_long_file_name as super_long_alias"
+        "  # type: ignore\n"
+    )
+
+    first_pass = isort.code(to_sort, multi_line_output=7, use_parentheses=True, line_length=40)
+    assert first_pass.count("# NOQA") == 1
+
+    second_pass = isort.code(first_pass, multi_line_output=7, use_parentheses=True, line_length=40)
+    assert second_pass == first_pass
+    assert second_pass.count("# NOQA") == 1
+
+
+def test_non_noqa_mode_wraps_with_an_ignored_opening_line_comment_issue_2093() -> None:
+    """A non-NOQA wrap mode keeps the parentheses clean of an ignored comment.
+
+    With ``use_parentheses`` and an opening-line comment the statement is wrapped
+    first and the comment is added to the ``from X import (`` line afterwards.
+    When ``ignore_comments`` strips that comment there is nothing to add, so the
+    first line must stay untouched. NOQA mode no longer takes this path, because
+    it never parenthesises the statement.
+    """
+    to_sort = (
+        "from my_package.my_module import super_long_file_name as super_long_alias"
+        "  # type: ignore\n"
+    )
+
+    first_pass = isort.code(
+        to_sort,
+        multi_line_output=0,
+        use_parentheses=True,
+        ignore_comments=True,
+        line_length=40,
+    )
+    assert first_pass == (
+        "from my_package.my_module import (\n    super_long_file_name as super_long_alias)\n"
+    )
+    assert first_pass == isort.code(
+        first_pass,
+        multi_line_output=0,
+        use_parentheses=True,
+        ignore_comments=True,
+        line_length=40,
     )
 
 
@@ -3145,3 +3250,18 @@ def test_split_comment_on_continuation_line_ends_the_section_issue_2678() -> Non
         assert isort.code(to_sort) == expected
         assert isort.code(expected) == expected
         assert isort.check_code(expected, show_diff=True)
+
+
+def test_a_bare_hash_survives_a_wrapped_import_line() -> None:
+    """An empty comment was treated as no comment, so the '#' was dropped."""
+    code = "from sys import super_long_name  #\n"
+    expected = "from sys import \\\n    super_long_name  #\n"
+    assert isort.code(code, force_grid_wrap=3, line_length=30) == expected
+    assert isort.code(expected, force_grid_wrap=3, line_length=30) == expected
+
+
+def test_a_bare_hash_survives_on_a_star_import() -> None:
+    """The same empty-comment check dropped the '#' from star imports."""
+    assert isort.code("from sys import *  #\n") == "from sys import *  #\n"
+    expected = "from some.really.long.module.name import \\\n    *  #\n"
+    assert isort.code("from some.really.long.module.name import *  #\n", line_length=30) == expected
