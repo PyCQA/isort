@@ -62,7 +62,7 @@ def sorted_imports(
         sections = (*base_sections, "no_sections")
 
     output: list[str] = []
-    seen_headings: set[str] = set()
+    seen_headings: set[tuple[str, ...]] = set()
     pending_lines_before = False
     for section in sections:
         section_output = _build_import_group(
@@ -88,24 +88,20 @@ def sorted_imports(
                 parsed.place_imports[section_name] = section_output
                 continue
 
-            section_title = config.import_headings.get(section_name.lower(), "")
-            if section_title and section_title not in seen_headings:
+            heading = config.import_headings.get(section_name.lower(), ())
+            if heading and heading not in seen_headings:
                 if config.dedup_headings:
-                    seen_headings.add(section_title)
-                section_comment = f"# {section_title}"
-                if section_comment not in parsed.lines_without_imports[0:1]:  # pragma: no branch
-                    section_output.insert(0, section_comment)
+                    seen_headings.add(heading)
+                if heading[0] not in parsed.lines_without_imports[0:1]:  # pragma: no branch
+                    section_output[0:0] = heading
 
-            section_footer = config.import_footers.get(section_name.lower(), "")
-            if section_footer and section_footer not in seen_headings:
+            footer = config.import_footers.get(section_name.lower(), ())
+            if footer and footer not in seen_headings:
                 if config.dedup_headings:
-                    seen_headings.add(section_footer)
-                section_comment_end = f"# {section_footer}"
-                if (
-                    section_comment_end not in parsed.lines_without_imports[-1:]
-                ):  # pragma: no branch
+                    seen_headings.add(footer)
+                if footer[-1] not in parsed.lines_without_imports[-1:]:  # pragma: no branch
                     section_output.append("")  # Empty line for black compatibility
-                    section_output.append(section_comment_end)
+                    section_output.extend(footer)
 
             if section in config.separate_packages:
                 section_output = _separate_packages(section_output, config)

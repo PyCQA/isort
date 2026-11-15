@@ -374,7 +374,13 @@ def process(
                     stripped_line in config.section_comments
                     or stripped_line in config.section_comments_end
                 ):
-                    if import_section and not contains_imports:
+                    previous_line = import_section.rstrip().rsplit("\n", 1)[-1].strip()
+                    if (
+                        import_section
+                        and not contains_imports
+                        and previous_line not in config.section_comments
+                        and previous_line not in config.section_comments_end
+                    ):
                         output_stream.write(import_section)
                         import_section = line
                         not_imports = False
@@ -382,7 +388,14 @@ def process(
                         import_section += line
                     indent = line[: -len(line.lstrip())]
                 elif not (stripped_line or contains_imports):
-                    not_imports = True
+                    previous_line = import_section.rstrip().rsplit("\n", 1)[-1].strip()
+                    if (
+                        previous_line in config.section_comments
+                        or previous_line in config.section_comments_end
+                    ):
+                        import_section += line
+                    else:
+                        not_imports = True
                 elif not stripped_line or (
                     stripped_line.startswith("#")
                     and (not indent or indent + line.lstrip() == line)

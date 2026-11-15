@@ -149,6 +149,26 @@ import django.settings
 import myproject.test
 ```
 
+Headings can span several lines. List them under `[tool.isort]`.
+
+```toml
+[tool.isort]
+import_heading_stdlib = ["#===", "#region stdlib"]
+```
+
+Entries that start with `#` pass through unchanged. Plain text gets `# `
+in front. isort ignores blank entries, so a heading can't include an
+empty line. Blank lines between a heading and the imports are removed.
+The Python API takes the same list, or one string with newlines.
+
+`setup.cfg` and `.isort.cfg` handle plain text only. The INI parser reads
+a leading `#` as a comment, so `#`-prefixed blocks need `pyproject.toml`
+or the Python API.
+
+`import_footer_{section_name}` takes the same list and renders below the
+section. isort recognizes blocks already in the file, so running it again
+doesn't add a second copy.
+
 ## Ordering by import length
 
 isort also makes it easy to sort your imports by length, simply by
