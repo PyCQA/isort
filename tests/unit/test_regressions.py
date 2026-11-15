@@ -3308,3 +3308,27 @@ def test_semicolon_split_first_line_with_continuation_issue_1918() -> None:
     assert output == expected
     ast.parse(output)
     assert isort.code(output) == output
+
+
+def test_semicolon_continuation_without_trailing_code() -> None:
+    source = "from os import \\\n    name;\n"
+    expected = "from os import name\n"
+    assert isort.code(source) == expected
+    assert isort.code(expected) == expected
+
+
+def test_semicolon_continuation_splits_trailing_code() -> None:
+    source = "from os import \\\n    name; print(name)\n"
+    expected = "from os import name\n\nprint(name)\n"
+    output = isort.code(source)
+    assert output == expected
+    ast.parse(output)
+    assert isort.code(output) == output
+
+
+def test_semicolon_continuation_after_another_statement_is_preserved() -> None:
+    source = "import a; from os import (\n    name; print(name)\n)\n"
+    expected = "import a\n\nfrom os import (\n    name; print(name)\n)\n"
+    output = isort.code(source)
+    assert output == expected
+    assert isort.code(output) == output
