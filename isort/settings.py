@@ -101,6 +101,15 @@ KNOWN_SECTION_MAPPING: dict[str, str] = {
 
 RUNTIME_SOURCE = "runtime"
 
+
+def _normalize_force_to_top(value: Any) -> tuple[str, ...]:
+    if isinstance(value, str):
+        value = _as_list(value)
+    if isinstance(value, (set, frozenset)):
+        return tuple(sorted(value))
+    return tuple(value)
+
+
 _STR_BOOLEAN_MAPPING = {
     "y": True,
     "yes": True,
@@ -264,12 +273,6 @@ class _Config:
                 f"{self.wrap_length} > {self.line_length}."
             )
 
-        force_to_top = self.force_to_top
-        if isinstance(force_to_top, (set, frozenset)):
-            object.__setattr__(self, "force_to_top", tuple(sorted(force_to_top)))
-        elif not isinstance(force_to_top, tuple):
-            object.__setattr__(self, "force_to_top", tuple(force_to_top))
-
     def __hash__(self) -> int:
         return id(self)
 
@@ -298,6 +301,7 @@ class Config(_Config):
         if config:
             config_vars = asdict(config).copy()
             config_vars.update(config_overrides)
+            config_vars["force_to_top"] = _normalize_force_to_top(config_vars["force_to_top"])
             config_vars["py_version"] = config_vars["py_version"].replace("py", "")
             super().__init__(**config_vars)
             return
@@ -424,10 +428,10 @@ class Config(_Config):
                 # would be iterated over character by character instead.
                 value = _as_list(value)
 
-            if key == "force_to_top" and isinstance(value, (set, frozenset)):
-                value = sorted(value)
-
-            combined_config[key] = type(default_value)(value)
+            if key == "force_to_top":
+                combined_config[key] = _normalize_force_to_top(value)
+            else:
+                combined_config[key] = type(default_value)(value)
 
         for section in combined_config.get("sections", ()):
             if section in SECTION_DEFAULTS:
