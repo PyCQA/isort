@@ -741,6 +741,8 @@ class Config(_Config):
 
 
 def _get_str_to_type_converter(setting_name: str) -> Callable[[object], object]:
+    if setting_name.startswith((IMPORT_HEADING_PREFIX, IMPORT_FOOTER_PREFIX)):
+        return lambda value: value
     type_converter: Callable[[object], object] = type(_DEFAULT_SETTINGS.get(setting_name, ""))
     if type_converter == WrapModes:
         type_converter = wrap_mode_from_string
@@ -900,8 +902,6 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, obj
             }
 
         for key, value in settings.items():
-            if key.startswith((IMPORT_HEADING_PREFIX, IMPORT_FOOTER_PREFIX)):
-                continue
             existing_value_type = _get_str_to_type_converter(key)
             if existing_value_type is tuple:
                 settings[key] = tuple(_as_list(value))
