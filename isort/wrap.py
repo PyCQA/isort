@@ -68,7 +68,7 @@ def import_statement(
                 remove_comments=config.ignore_comments,
             )
             lines = new_import_statement.split(line_separator)
-    if statement.count(line_separator) == 0 and not _is_wrapped(statement):
+    if statement.count(line_separator) == 0:
         return _wrap_line(statement, line_separator, config)
     return statement
 
@@ -82,6 +82,9 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
     if wrap_mode is Modes.NOQA:
         if "# NOQA" not in content:
             return f"{content}{config.comment_prefix} NOQA"
+        return content
+
+    if _is_wrapped(content):
         return content
 
     line_without_comment = content
