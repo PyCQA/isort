@@ -1609,3 +1609,18 @@ def test_force_to_top_copied_config_normalizes_to_tuple_issue_2130() -> None:
     assert Config(config=base_config, force_to_top=frozenset()).force_to_top == ()
     assert Config(config=base_config, force_to_top=[]).force_to_top == ()
     assert Config(config=base_config, force_to_top=()).force_to_top == ()
+
+    # 7. Copied config with string overrides
+    config_single_string = Config(config=base_config, force_to_top="torch")
+    assert config_single_string.force_to_top == ("torch",)
+    assert (
+        isort.code("import tensorflow\nimport torch\n", config=config_single_string)
+        == "import torch\nimport tensorflow\n"
+    )
+
+    config_comma_separated = Config(config=base_config, force_to_top="torch,tensorflow")
+    assert config_comma_separated.force_to_top == ("torch", "tensorflow")
+    assert (
+        isort.code("import tensorflow\nimport torch\n", config=config_comma_separated)
+        == "import torch\nimport tensorflow\n"
+    )
