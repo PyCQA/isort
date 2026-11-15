@@ -1263,3 +1263,51 @@ from foo import a, b, e  # comment
 from foo import c as d
 """
     assert isort.code(code) == code
+
+
+def test_isort_removes_redundant_straight_imports_issue_2285() -> None:
+    """isort drops ``import a`` when ``import a.b`` already binds ``a``.
+
+    See: https://github.com/PyCQA/isort/issues/2285
+    """
+    # Simple parent/child: ``import logging`` is dropped.
+    assert (
+        isort.code(
+            "import logging\nimport logging.handlers\n",
+            remove_redundant_straight_imports=True,
+        )
+        == "import logging.handlers\n"
+    )
+
+    # Deeper chain: only the deepest survives.
+    assert (
+        isort.code(
+            "import a\nimport a.b\nimport a.b.c\n",
+            remove_redundant_straight_imports=True,
+        )
+        == "import a.b.c\n"
+    )
+
+    # Aliased child: ``import a.b as x`` binds only ``x``, so ``import a`` stays.
+    assert (
+        isort.code(
+            "import a\nimport a.b as x\n",
+            remove_redundant_straight_imports=True,
+        )
+        == "import a\nimport a.b as x\n"
+    )
+
+    # Aliased parent: ``import a as y`` binds only ``y``; nothing removed.
+    assert (
+        isort.code(
+            "import a as y\nimport a.b\n",
+            remove_redundant_straight_imports=True,
+        )
+        == "import a as y\nimport a.b\n"
+    )
+
+    # Default behaviour: option off, both imports kept.
+    assert (
+        isort.code("import logging\nimport logging.handlers\n")
+        == "import logging\nimport logging.handlers\n"
+    )
