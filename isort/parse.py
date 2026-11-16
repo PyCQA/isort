@@ -264,10 +264,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
             attach_comments_to: list[str] | None = None
             direct_imports = just_imports[1:]
-            straight_import = True
+            # Straight imports that only bind an alias on this line; the others are plain imports.
+            aliased_modules: list[str] = []
             top_level_module = ""
             if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
-                straight_import = False
                 while "as" in just_imports:
                     nested_module = None
                     as_index = just_imports.index("as")
@@ -297,8 +297,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         as_name = just_imports[as_index + 1]
                         if module == as_name and config.remove_redundant_aliases:
                             pass
-                        elif as_name not in as_map["straight"][module]:
-                            as_map["straight"][module].append(as_name)
+                        else:
+                            aliased_modules.append(module)
+                            if as_name not in as_map["straight"][module]:
+                                as_map["straight"][module].append(as_name)
 
                     if comments and attach_comments_to is None:
                         if nested_module and config.combine_as_imports:
@@ -469,6 +471,11 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     import_bucket: Literal["lazy_straight", "straight"] = (
                         "lazy_straight" if is_lazy else "straight"
                     )
+                    if module in aliased_modules:
+                        aliased_modules.remove(module)
+                        straight_import = False
+                    else:
+                        straight_import = True
                     straight_import |= imports[placed_module][import_bucket].get(module, False)
                     imports[placed_module][import_bucket][module] = straight_import
 
