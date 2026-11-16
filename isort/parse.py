@@ -250,17 +250,12 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         nested_comments[stripped_line] = extra_line.comment
 
             if ";" in import_string.split("#")[0] and ";" not in statement.split("#")[0]:
-                if statement.split("#", 1)[0].rstrip().endswith("\\"):
-                    import_string, _, trailing_code = import_string.partition(";")
-                    if trailing_code.strip():
-                        out_lines.append(trailing_code.strip())
+                if len(statements) == 1:
+                    out_lines.extend(in_lines[statement_index - 1 : index])
                 else:
-                    if len(statements) == 1:
-                        out_lines.extend(in_lines[statement_index - 1 : index])
-                    else:
-                        out_lines.append(raw_lines[0])
-                        out_lines.extend(in_lines[statement_index:index])
-                    continue
+                    out_lines.append(raw_lines[0])
+                    out_lines.extend(in_lines[statement_index:index])
+                continue
 
             if import_index == -1:
                 import_index = statement_index - 1
@@ -449,7 +444,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                                 last = out_lines[-1].rstrip()
                             else:
                                 last = ""
-                        if index - 1 == import_index:
+                        if statement_index - 1 == import_index:
                             import_index -= len(
                                 categorized_comments["above"]["straight"].get(module, [])
                             )
