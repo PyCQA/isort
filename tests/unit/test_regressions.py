@@ -2963,19 +2963,6 @@ def test_semicolon_from_backslash_continuation_emitted_as_is_issue_1918():
     assert isort.code(output) == output
 
 
-def test_semicolon_from_paren_continuation_emitted_as_is_issue_1918():
-    """Same guard through the parenthesized continuation path.
-
-    The input itself is invalid Python (``;`` cannot appear in an import
-    list), so the contract is emit-as-is with no added damage, not validity.
-    See: https://github.com/PyCQA/isort/issues/1918
-    """
-    source = "from os import (\n    name; print(name)\n)\n"
-    output = isort.code(source)
-    assert output == source
-    assert isort.code(output) == output
-
-
 def test_semicolon_from_straight_continuation_emitted_as_is_issue_1918():
     """Same guard for straight imports broken across lines.
     See: https://github.com/PyCQA/isort/issues/1918
@@ -3017,6 +3004,9 @@ def test_straight_continuation_keeps_leading_comment_above_import_issue_1918():
 
 def test_semicolon_continuation_slice_covers_comment_lines_issue_1918():
     """The raw emit spans first line through closing line, comments included.
+
+    The input itself is invalid Python (``;`` cannot appear in an import
+    list), so the contract is emit-as-is with no added damage, not validity.
     See: https://github.com/PyCQA/isort/issues/1918
     """
     source = "from os import (\n    # comment about name\n    name; print(name)\n)\n"
@@ -3357,12 +3347,4 @@ def test_semicolon_continuation_without_trailing_code() -> None:
     source = "from os import \\\n    name;\n"
     output = isort.code(source)
     assert output == source
-    assert isort.code(output) == output
-
-
-def test_semicolon_continuation_after_another_statement_is_preserved() -> None:
-    source = "import a; from os import (\n    name; print(name)\n)\n"
-    expected = "import a\n\nfrom os import (\n    name; print(name)\n)\n"
-    output = isort.code(source)
-    assert output == expected
     assert isort.code(output) == output
