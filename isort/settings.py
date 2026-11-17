@@ -787,8 +787,14 @@ def find_all_configs(path: str, config_overrides: dict[str, Any] | None = None) 
     Looks for config files in the path provided and in all of its sub-directories.
     Parses and stores any config file encountered in a trie and returns the root of
     the trie. Any config_overrides take precedence over the settings of every config file.
+    The settings_path and settings_file overrides are ignored, so that each file keeps the
+    config file found nearest to it.
     """
-    config_overrides = config_overrides or {}
+    config_overrides = {
+        key: value
+        for key, value in (config_overrides or {}).items()
+        if key not in ("settings_path", "settings_file")
+    }
     trie_root = Trie("default", config_overrides)
 
     for dirpath, _, _ in os.walk(path):
