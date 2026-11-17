@@ -1,4 +1,5 @@
 import textwrap
+from functools import lru_cache
 from io import StringIO
 from itertools import chain
 from typing import NamedTuple, TextIO
@@ -622,6 +623,11 @@ def _indented_config(config: Config, indent: str) -> Config:
     if not indent:
         return config
 
+    return _cached_indented_config(config, indent)
+
+
+@lru_cache(maxsize=16)
+def _cached_indented_config(config: Config, indent: str) -> Config:
     return Config(
         config=config,
         line_length=max(config.line_length - len(indent), 0),

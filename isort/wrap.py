@@ -7,6 +7,11 @@ from .wrap_modes import WrapModes as Modes
 from .wrap_modes import formatter_from_string, vertical_hanging_indent
 
 
+def _is_wrapped(statement: str) -> bool:
+    """Whether ``statement`` already wraps its import list in parentheses."""
+    return "(" in statement.split("#", 1)[0]
+
+
 def import_statement(
     import_start: str,
     from_imports: list[str],
@@ -77,6 +82,9 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
     if wrap_mode is Modes.NOQA:
         if "# NOQA" not in content:
             return f"{content}{config.comment_prefix} NOQA"
+        return content
+
+    if _is_wrapped(content):
         return content
 
     line_without_comment = content

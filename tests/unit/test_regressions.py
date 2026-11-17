@@ -3191,3 +3191,88 @@ def test_a_bare_hash_survives_on_a_star_import() -> None:
     assert isort.code("from sys import *  #\n") == "from sys import *  #\n"
     expected = "from some.really.long.module.name import \\\n    *  #\n"
     assert isort.code("from some.really.long.module.name import *  #\n", line_length=30) == expected
+
+
+@pytest.mark.parametrize("use_parentheses", [False, True])
+def test_grid_wrap_with_trailing_comma_keeps_a_dotted_from_import_valid(
+    use_parentheses: bool,
+) -> None:
+    """``force_grid_wrap`` and ``include_trailing_comma`` must not produce invalid Python.
+
+    The grid formatter does not account for the trailing comma it appends, so a statement
+    whose grid form is one character over the line length was handed back to the generic
+    wrapper, which parenthesised the rest of the statement behind the dot of the module
+    path: ``from mymodule.sub import (long_name, y2,)`` became
+    ``from mymodule.(\\n    sub import (long_name, y2,),)``, a syntax error.
+    """
+    to_sort = "from mymodule.sub import y2, long_name\n"
+    expected = "from mymodule.sub import (\n    long_name, y2,)\n"
+
+    result = isort.code(
+        to_sort,
+        force_grid_wrap=2,
+        include_trailing_comma=True,
+        use_parentheses=use_parentheses,
+        line_length=40,
+    )
+
+    assert ast.parse(result)
+    assert result == expected
+    assert (
+        isort.code(
+            result,
+            force_grid_wrap=2,
+            include_trailing_comma=True,
+            use_parentheses=use_parentheses,
+            line_length=40,
+        )
+        == result
+    )
+
+
+def test_aliased_import_with_an_opening_line_comment_stays_within_line_length_issue_2775() -> None:
+    """The opening-line comment was added after wrapping and pushed the import past line_length."""
+    expected = (
+        "from some.package.with_a_rather_long_module_name import (  # noqa: N813\n"
+        "    SomeLongClassName as alias,\n"
+        ")\n"
+    )
+    assert isort.code(expected, profile="black") == expected
+    # black's output for the long single line
+    black_output = (
+        "from some.package.with_a_rather_long_module_name import (\n"
+        "    SomeLongClassName as alias,\n"
+        ")  # noqa: N813\n"
+    )
+    assert isort.code(black_output, profile="black") == expected
+    # also with a type: ignore comment
+    expected = expected.replace("# noqa: N813", "# type: ignore[attr-defined]")
+    assert isort.code(expected, profile="black") == expected
+
+
+def test_trailing_comma_on_aliased_only_import_does_not_explode_plain_imports_issue_2793() -> None:
+    """A trailing comma recorded on an alias-only statement exploded the module's plain imports.
+
+    The aliased import is written as its own statement, so its trailing comma (added by isort
+    itself when wrapping) must not force ``from requests import Z`` onto multiple lines.
+    """
+    first_pass = isort.code(
+        "from requests import long_name_here as long_name_here2, Z\n",
+        profile="black",
+        line_length=40,
+    )
+    assert first_pass == (
+        "from requests import Z\n"
+        "from requests import (\n"
+        "    long_name_here as long_name_here2,\n"
+        ")\n"
+    )
+    assert isort.code(first_pass, profile="black", line_length=40) == first_pass
+    # A trailing comma on a statement that does import the plain name still splits it.
+    assert isort.code("from requests import (a as b, Z,)\n", profile="black") == (
+        "from requests import (\n    Z,\n)\nfrom requests import a as b\n"
+    )
+    # So does a trailing comma on a redundant alias that is written as a plain import.
+    assert isort.code(
+        "from requests import (Z as Z,)\n", profile="black", remove_redundant_aliases=True
+    ) == ("from requests import (\n    Z,\n)\n")
