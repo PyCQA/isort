@@ -2950,7 +2950,7 @@ def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments()
                     ast.parse(output)  # must never raise
 
 
-def test_semicolon_from_backslash_continuation_emitted_as_is_issue_1918():
+def test_semicolon_from_backslash_continuation_emitted_as_is_issue_1918() -> None:
     """A semicolon introduced by a backslash continuation is not an import.
 
     The continuation must not be parsed for names; the lines go out unchanged.
@@ -2963,7 +2963,7 @@ def test_semicolon_from_backslash_continuation_emitted_as_is_issue_1918():
     assert isort.code(output) == output
 
 
-def test_semicolon_from_straight_continuation_emitted_as_is_issue_1918():
+def test_semicolon_from_straight_continuation_emitted_as_is_issue_1918() -> None:
     """Same guard for straight imports broken across lines.
     See: https://github.com/PyCQA/isort/issues/1918
     """
@@ -2974,7 +2974,7 @@ def test_semicolon_from_straight_continuation_emitted_as_is_issue_1918():
     assert isort.code(output) == output
 
 
-def test_semicolon_continuation_keeps_hash_inside_string_issue_1918():
+def test_semicolon_continuation_keeps_hash_inside_string_issue_1918() -> None:
     """A ``#`` inside a string is code, not a comment boundary.
 
     Parsing the continuation for names would truncate the string at ``#`` and
@@ -2988,7 +2988,7 @@ def test_semicolon_continuation_keeps_hash_inside_string_issue_1918():
     assert isort.code(output) == output
 
 
-def test_straight_continuation_keeps_leading_comment_above_import_issue_1918():
+def test_straight_continuation_keeps_leading_comment_above_import_issue_1918() -> None:
     """Moving a leading comment must not leave the import below the code it feeds.
 
     The continuation advances ``index`` past the import line, so the straight-import
@@ -3002,7 +3002,7 @@ def test_straight_continuation_keeps_leading_comment_above_import_issue_1918():
     assert isort.code(output) == output
 
 
-def test_semicolon_continuation_slice_covers_comment_lines_issue_1918():
+def test_semicolon_continuation_slice_covers_comment_lines_issue_1918() -> None:
     """The raw emit spans first line through closing line, comments included.
 
     The input itself is invalid Python (``;`` cannot appear in an import
@@ -3015,7 +3015,7 @@ def test_semicolon_continuation_slice_covers_comment_lines_issue_1918():
     assert isort.code(output) == output
 
 
-def test_semicolon_continuation_does_not_shift_later_imports_issue_1918():
+def test_semicolon_continuation_does_not_shift_later_imports_issue_1918() -> None:
     """A skipped construct must not claim the import insertion point.
 
     Imports after it sort among themselves and stay after it.
@@ -3028,7 +3028,7 @@ def test_semicolon_continuation_does_not_shift_later_imports_issue_1918():
     assert isort.code(output) == output
 
 
-def test_semicolon_split_first_line_with_continuation_issue_1918():
+def test_semicolon_split_first_line_with_continuation_issue_1918() -> None:
     """A later piece of a semicolon-split line emits only its own text.
 
     The earlier piece keeps its normal handling; only the piece text plus
@@ -3347,4 +3347,17 @@ def test_semicolon_continuation_without_trailing_code() -> None:
     source = "from os import \\\n    name;\n"
     output = isort.code(source)
     assert output == source
+    assert isort.code(output) == output
+
+
+def test_semicolon_after_parenthesized_import_keeps_following_imports_sorted_issue_1918() -> None:
+    """A ``);`` closes the import before the next statement starts.
+    See: https://github.com/PyCQA/isort/issues/1918
+    """
+    source = "from os import (\n    name\n);\nimport z\nimport a\n"
+    ast.parse(source)
+    expected = "from os import (\n    name\n);\nimport a\nimport z\n"
+    output = isort.code(source)
+    assert output == expected
+    ast.parse(output)
     assert isort.code(output) == output

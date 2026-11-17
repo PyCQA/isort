@@ -92,6 +92,11 @@ class ImportContinuationResult(NamedTuple):
     extra_lines: list[ExtraLine]
 
 
+def _closes_parenthesized_import(line: str) -> bool:
+    commentless = line.split("#", maxsplit=1)[0].rstrip()
+    return commentless.endswith((")", ");"))
+
+
 def collect_import_continuation(
     line: str,
     import_string: str,
@@ -106,7 +111,7 @@ def collect_import_continuation(
     extra_lines: list[ExtraLine] = []
 
     if "(" in line.split("#", 1)[0]:
-        while not line.split("#", maxsplit=1)[0].strip().endswith(")"):
+        while not _closes_parenthesized_import(line):
             try:
                 line, comment = get_next_line()
             except StopIteration:
@@ -126,7 +131,7 @@ def collect_import_continuation(
                 extra_lines.append(ExtraLine(line=line, comment=comment))
                 import_string += line_separator + line
 
-                while not line.split("#")[0].strip().endswith(")"):
+                while not _closes_parenthesized_import(line):
                     try:
                         line, comment = get_next_line()
                     except StopIteration:
