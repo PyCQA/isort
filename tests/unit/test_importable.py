@@ -4,11 +4,12 @@
 
 import subprocess
 import sys
-from contextlib import suppress
 from pathlib import Path
 
+import pytest
 
-def test_importable() -> None:
+
+def test_importable(monkeypatch: pytest.MonkeyPatch) -> None:
     """Simple smoketest to ensure all isort modules are importable"""
 
     import isort
@@ -45,10 +46,10 @@ def test_importable() -> None:
     import isort.wrap
     import isort.wrap_modes
 
-    # Ensure predictable test failure regardless of the ambient pytest argv causing a `SystemExit`
-    # in isort.__main__ when it tries to parse the pytest argv.
-    with suppress(SystemExit):
-        import isort.__main__  # noqa: F401
+    # `isort.__main__` runs isort with `sys.argv`. With pytest's argv it would sort any files and
+    # directories passed to pytest in place, while without arguments it only prints a guide.
+    monkeypatch.setattr(sys, "argv", ["isort"])
+    import isort.__main__  # noqa: F401
 
 
 def test_module_cli_invocation_works(tmp_path: Path) -> None:
