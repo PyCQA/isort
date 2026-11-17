@@ -1067,7 +1067,8 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
 
     config_trie: Trie | None = None
     if resolve_all_configs:
-        config_trie = find_all_configs(config_dict.pop("config_root", "."))
+        config_root = config_dict.pop("config_root", ".")
+        config_trie = find_all_configs(config_root, config_dict)
 
     if "src_paths" in config_dict:
         # Keep CLI-provided values as-is so wildcard patterns can be expanded later
