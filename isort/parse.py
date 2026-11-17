@@ -75,6 +75,9 @@ class ParsedContent(NamedTuple):
     sections: tuple[str, ...]
     verbose_output: list[str]
     trailing_commas: set[str]
+    lazy_as_map: dict[str, dict[str, list[str]]]
+    lazy_categorized_comments: "CommentsDict"
+    lazy_trailing_commas: set[str]
 
 
 # Ignore DeepSource cyclomatic complexity check for this function. It is one
@@ -99,10 +102,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
     place_imports: dict[str, list[str]] = {}
     import_placements: dict[str, str] = {}
-    as_map: dict[str, dict[str, list[str]]] = {
-        "straight": defaultdict(list),
-        "from": defaultdict(list),
-    }
     imports: OrderedDict[str, ParsedImports] = OrderedDict()
     verbose_output: list[str] = []
 
@@ -113,14 +112,17 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             "lazy_straight": OrderedDict(),
             "lazy_from": OrderedDict(),
         }
-    categorized_comments: CommentsDict = {
-        "from": {},
-        "straight": {},
-        "nested": {},
-        "above": {"straight": {}, "from": {}},
-    }
 
-    trailing_commas: set[str] = set()
+    # An eager and a lazy import of the same module are separate statements, so their aliases,
+    # comments and trailing commas are kept apart, keyed by ``is_lazy``.
+    as_maps: dict[bool, dict[str, dict[str, list[str]]]] = {
+        lazy: {"straight": defaultdict(list), "from": defaultdict(list)} for lazy in (False, True)
+    }
+    comments_dicts: dict[bool, CommentsDict] = {
+        lazy: {"from": {}, "straight": {}, "nested": {}, "above": {"straight": {}, "from": {}}}
+        for lazy in (False, True)
+    }
+    trailing_comma_sets: dict[bool, set[str]] = {lazy: set() for lazy in (False, True)}
 
     index = 0
     import_index = -1
@@ -217,6 +219,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     if type_of_import is _ImportType.LAZY_STRAIGHT
                     else _ImportType.FROM
                 )
+            as_map = as_maps[is_lazy]
+            categorized_comments = comments_dicts[is_lazy]
+            trailing_commas = trailing_comma_sets[is_lazy]
 
             if import_index == -1:
                 import_index = index - 1
@@ -489,13 +494,16 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         import_index=import_index,
         place_imports=place_imports,
         import_placements=import_placements,
-        as_map=as_map,
+        as_map=as_maps[False],
         imports=imports,
-        categorized_comments=categorized_comments,
+        categorized_comments=comments_dicts[False],
         change_count=change_count,
         original_line_count=original_line_count,
         line_separator=line_separator,
         sections=config.sections,
         verbose_output=verbose_output,
-        trailing_commas=trailing_commas,
+        trailing_commas=trailing_comma_sets[False],
+        lazy_as_map=as_maps[True],
+        lazy_categorized_comments=comments_dicts[True],
+        lazy_trailing_commas=trailing_comma_sets[True],
     )
