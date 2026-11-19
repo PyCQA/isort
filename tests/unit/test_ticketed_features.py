@@ -1624,3 +1624,92 @@ def test_force_to_top_copied_config_normalizes_to_tuple_issue_2130() -> None:
         isort.code("import tensorflow\nimport torch\n", config=config_comma_separated)
         == "import torch\nimport tensorflow\n"
     )
+
+
+def test_isort_respects_quiet_from_check_file_api_see_1868(
+    capsys: pytest.CaptureFixture[str], tmp_path: Path
+) -> None:
+    """Test to ensure isort respects the quiet API parameter across check APIs.
+    See: https://github.com/PyCQA/isort/issues/1868.
+    """
+    unsorted_content = "import b\nimport a\n"
+    sorted_content = "import a\nimport b\n"
+
+    unsorted_file = tmp_path / "unsorted.py"
+    sorted_file = tmp_path / "sorted.py"
+    unsorted_file.write_text(unsorted_content, encoding="utf-8")
+    sorted_file.write_text(sorted_content, encoding="utf-8")
+
+    # 1. Baseline confirmation - quiet=False produces error output on stderr
+    assert not isort.check_file(unsorted_file, quiet=False)
+    out, error = capsys.readouterr()
+    assert not out
+    assert "Imports are incorrectly sorted and/or formatted." in error
+
+    # 2. Unsorted file with quiet=True returns False and suppresses stderr
+    assert not isort.check_file(unsorted_file, quiet=True)
+    out, error = capsys.readouterr()
+    assert not out
+    assert not error
+
+    # 3. Sorted file with quiet=True returns True with empty output
+    assert isort.check_file(sorted_file, quiet=True)
+    out, error = capsys.readouterr()
+    assert not out
+    assert not error
+
+    # 4. Sorted file with quiet=True and verbose=True suppresses success output
+    assert isort.check_file(sorted_file, quiet=True, verbose=True)
+    out, error = capsys.readouterr()
+    assert "Everything Looks Good!" not in out
+    assert not error
+
+    # 5. Unsorted file with quiet=True, show_diff=True shows diff on stdout but suppresses stderr
+    assert not isort.check_file(unsorted_file, quiet=True, show_diff=True)
+    out, error = capsys.readouterr()
+    assert "+import a" in out
+    assert "-import a" in out
+    assert not error
+
+    # 6. Reused Config(quiet=True) object suppresses diagnostic output
+    quiet_config = Config(quiet=True)
+    assert not isort.check_file(unsorted_file, config=quiet_config)
+    out, error = capsys.readouterr()
+    assert not out
+    assert not error
+
+    # 7. Config-file-based quiet=True (.isort.cfg) suppresses diagnostic output
+    settings_file = tmp_path / ".isort.cfg"
+    settings_file.write_text(
+        """
+[isort]
+quiet = true
+""",
+        encoding="utf-8",
+    )
+    assert not isort.check_file(unsorted_file, settings_file=str(settings_file))
+    out, error = capsys.readouterr()
+    assert not out
+    assert not error
+
+    # 8. check_stream() with quiet=True returns False and suppresses stderr
+    input_stream = StringIO(unsorted_content)
+    assert not isort.check_stream(input_stream, quiet=True)
+    out, error = capsys.readouterr()
+    assert not out
+    assert not error
+
+    # 9. check_code() with quiet=True returns False and suppresses stderr
+    assert not isort.check_code(unsorted_content, quiet=True)
+    out, error = capsys.readouterr()
+    assert not out
+    assert not error
+
+    # 10. Custom diff output stream with quiet=True writes diff to stream, stdout/stderr empty
+    diff_stream = StringIO()
+    assert not isort.check_file(unsorted_file, quiet=True, show_diff=diff_stream)
+    out, error = capsys.readouterr()
+    assert not out
+    assert not error
+    assert "+import a" in diff_stream.getvalue()
+    assert "-import a" in diff_stream.getvalue()
