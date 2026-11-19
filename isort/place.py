@@ -76,7 +76,12 @@ def _src_path(
 
     for src_path in src_paths:
         module_path = (src_path / root_module_name).resolve()
-        if not prefix and not module_path.is_dir() and src_path.name == root_module_name:
+        if (
+            not prefix
+            and not module_path.is_dir()
+            and src_path.name == root_module_name
+            and (nested_module or _is_module(src_path))
+        ):
             module_path = src_path.resolve()
         if nested_module and (
             namespace in config.namespace_packages
@@ -142,5 +147,7 @@ def _is_namespace_package(path: Path, src_extensions: frozenset[str]) -> bool:
 
 def _src_path_is_module(src_path: Path, module_name: str) -> bool:
     return (
-        module_name == src_path.name and src_path.is_dir() and exists_case_sensitive(str(src_path))
+        module_name == src_path.name
+        and _is_module(src_path)
+        and exists_case_sensitive(str(src_path))
     )
