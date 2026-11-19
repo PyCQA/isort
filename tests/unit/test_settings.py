@@ -29,6 +29,30 @@ class TestConfig:
             known_third_party=["one"], known_thirdparty=["two"]
         ).known_third_party == frozenset({"one"})
 
+    def test_multi_value_setting_provided_as_string(self) -> None:
+        """A single string holds a separated list of items for list-like settings.
+
+        Previously such a value was iterated over character by character, which silently made
+        the documented `no_lines_before` of the `appnexus` profile a no-op.
+        """
+        assert Config(no_lines_before="LOCALFOLDER").no_lines_before == frozenset({"LOCALFOLDER"})
+        assert Config(no_lines_before="future,stdlib").no_lines_before == frozenset(
+            {"future", "stdlib"}
+        )
+        assert Config(profile="appnexus").no_lines_before == frozenset({"LOCALFOLDER"})
+        assert Config(sections="STDLIB,FIRSTPARTY").sections == ("STDLIB", "FIRSTPARTY")
+
+        source = "import os\n\nimport app\n\nimport app_mod\n\nfrom . import local\n"
+        assert (
+            code(
+                source,
+                profile="appnexus",
+                known_first_party=["app"],
+                known_application=["app_mod"],
+            )
+            == "import os\n\nimport app\n\nimport app_mod\nfrom . import local\n"
+        )
+
     def test_invalid_settings_path(self) -> None:
         with pytest.raises(exceptions.InvalidSettingsPath):
             Config(settings_path="this_couldnt_possibly_actually_exists/could_it")
@@ -41,9 +65,154 @@ class TestConfig:
         with pytest.raises(exceptions.ProfileDoesNotExist):
             Config(profile="blackandwhitestylemixedwithpep8")
 
+    @pytest.mark.parametrize(
+        ("indent", "expected"),
+        [
+            ("tab", "\t"),
+            ("Tab", "\t"),
+            ('"tab"', "\t"),
+            ("\t", "\t"),
+            ("\\t", "\t"),
+            ("\\t\\t", "\t\t"),
+            ("2", "  "),
+            ("'  '", "  "),
+        ],
+    )
+    def test_indent(self, indent: str, expected: str) -> None:
+        assert Config(indent=indent).indent == expected
+
+    def test_indent_escaped_tab_in_config_file(self, tmp_path: Path) -> None:
+        (tmp_path / ".isort.cfg").write_text("[settings]\nindent=\\t\n", encoding="utf8")
+        assert Config(settings_path=str(tmp_path)).indent == "\t"
+
     def test_is_skipped(self) -> None:
         assert Config().is_skipped(Path("C:\\path\\isort.py"))
         assert Config(skip=["/path/isort.py"]).is_skipped(Path("C:\\path\\isort.py"))
+
+    @pytest.mark.parametrize("skip_path", ["src/resources.py", "src\\resources.py"])
+    def test_skip_relative_existing_file_path(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        skip_path: str,
+    ) -> None:
+        target = tmp_path / "src" / "resources.py"
+        target.parent.mkdir()
+        target.touch()
+        other = tmp_path / "other" / "resources.py"
+        other.parent.mkdir()
+        other.touch()
+        monkeypatch.chdir(tmp_path)
+
+        config = Config(skip=[skip_path])
+        extended_config = Config(extend_skip=[skip_path])
+        cached_skips = config.posix_skips
+        cached_extended_skips = extended_config.posix_skips
+
+        assert config.is_skipped(target)
+        assert config.is_skipped(target.relative_to(tmp_path))
+        assert not config.is_skipped(other)
+        assert config.posix_skips is cached_skips
+        assert extended_config.is_skipped(target)
+        assert extended_config.is_skipped(target.relative_to(tmp_path))
+        assert not extended_config.is_skipped(other)
+        assert extended_config.posix_skips is cached_extended_skips
+
+    @pytest.mark.parametrize("separator", ["/", "\\"])
+    def test_skip_absolute_existing_file_path(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        separator: str,
+    ) -> None:
+        target = tmp_path / "src" / "resources.py"
+        target.parent.mkdir()
+        target.touch()
+        other = tmp_path / "other" / "resources.py"
+        other.parent.mkdir()
+        other.touch()
+        monkeypatch.chdir(tmp_path)
+        skip_path = target.as_posix().replace("/", separator)
+        config = Config(skip=[skip_path])
+        extended_config = Config(extend_skip=[skip_path])
+
+        assert config.is_skipped(target)
+        assert config.is_skipped(target.relative_to(tmp_path))
+        assert not config.is_skipped(other)
+        assert extended_config.is_skipped(target)
+        assert extended_config.is_skipped(target.relative_to(tmp_path))
+        assert not extended_config.is_skipped(other)
+
+    @pytest.mark.parametrize("skip_path", ["src/generated", "src\\generated"])
+    def test_skip_relative_existing_directory_path(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, skip_path: str
+    ) -> None:
+        target = tmp_path / "src" / "generated"
+        target.mkdir(parents=True)
+        other = tmp_path / "other" / "generated"
+        other.mkdir(parents=True)
+        monkeypatch.chdir(tmp_path)
+        config = Config(skip=[skip_path])
+        extended_config = Config(extend_skip=[skip_path])
+
+        assert config.is_skipped(target)
+        assert not config.is_skipped(other)
+        assert extended_config.is_skipped(target)
+        assert not extended_config.is_skipped(other)
+
+    @pytest.mark.parametrize("separator", ["/", "\\"])
+    def test_skip_absolute_existing_directory_path(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, separator: str
+    ) -> None:
+        target = tmp_path / "src" / "generated"
+        target.mkdir(parents=True)
+        other = tmp_path / "other" / "generated"
+        other.mkdir(parents=True)
+        monkeypatch.chdir(tmp_path)
+        skip_path = target.as_posix().replace("/", separator)
+        config = Config(skip=[skip_path])
+        extended_config = Config(extend_skip=[skip_path])
+
+        assert config.is_skipped(target)
+        assert not config.is_skipped(other)
+        assert extended_config.is_skipped(target)
+        assert not extended_config.is_skipped(other)
+
+    @pytest.mark.parametrize("skip_name", ["src", "resources.py"])
+    def test_skip_path_components(self, tmp_path: Path, skip_name: str) -> None:
+        target = tmp_path / "src" / "resources.py"
+        target.parent.mkdir()
+        target.touch()
+        other = tmp_path / "other.py"
+        other.touch()
+        config = Config(skip=[skip_name])
+        extended_config = Config(extend_skip=[skip_name])
+
+        assert config.is_skipped(target)
+        assert not config.is_skipped(other)
+        assert extended_config.is_skipped(target)
+        assert not extended_config.is_skipped(other)
+
+    @pytest.mark.skipif(sys.platform != "win32", reason="Windows drive-qualified paths")
+    def test_skip_path_preserves_drive(self, tmp_path: Path) -> None:
+        target = tmp_path / "resources.py"
+        target.touch()
+        other_drive = "D:" if target.drive.upper() == "C:" else "C:"
+        other_path = other_drive + target.as_posix()[2:]
+
+        assert Config(skip=[target.as_posix()]).is_skipped(target)
+        assert not Config(skip=[other_path]).is_skipped(target)
+        assert Config(extend_skip=[target.as_posix()]).is_skipped(target)
+        assert not Config(extend_skip=[other_path]).is_skipped(target)
+
+    @pytest.mark.skipif(os.sep != "/", reason="POSIX paths can contain literal backslashes")
+    def test_skip_path_preserves_literal_backslash(self, tmp_path: Path) -> None:
+        target = tmp_path / "generated\\legacy" / "resources.py"
+        target.parent.mkdir()
+        target.touch()
+
+        assert Config(skip=[str(target)]).is_skipped(target)
+        assert Config(extend_skip=[str(target)]).is_skipped(target)
 
     def test_is_supported_filetype(self) -> None:
         assert self.instance.is_supported_filetype("file.py")
@@ -57,11 +226,6 @@ class TestConfig:
     def test_is_supported_filetype_ioerror(self, tmp_path: Path) -> None:
         does_not_exist = tmp_path / "fake.txt"
         assert not self.instance.is_supported_filetype(str(does_not_exist))
-
-    def test_is_supported_filetype_shebang(self, tmp_path: Path) -> None:
-        path = tmp_path / "myscript"
-        path.write_text("#!/usr/bin/env python\n")
-        assert self.instance.is_supported_filetype(str(path))
 
     def test_is_supported_filetype_editor_backup(self, tmp_path: Path) -> None:
         path = tmp_path / "myscript~"
@@ -352,3 +516,40 @@ something = nothing
 
     config_info_4 = config_trie.search(str(tmp_path / "file4.py"))
     assert config_info_4[0] == "default"
+
+
+@pytest.mark.parametrize(
+    ("comment_prefix", "comment", "expected"),
+    [
+        ("", "#region Standard Library", "#region Standard Library"),
+        ("   ", "#region Standard Library", "#region Standard Library"),
+        ("  #", "Standard Library", "# Standard Library"),
+        (" #", "Standard Library", "# Standard Library"),
+        ("# ", "Standard Library", "# Standard Library"),
+        ("#\t", "Standard Library", "#\tStandard Library"),
+        ("##", "Standard Library", "## Standard Library"),
+        ("## ", "Standard Library", "## Standard Library"),
+    ],
+)
+def test_format_section_comment(comment_prefix: str, comment: str, expected: str) -> None:
+    assert settings.format_section_comment(comment_prefix, comment) == expected
+
+
+def test_section_comments_respect_comment_prefix() -> None:
+    config = Config(
+        comment_prefix="",
+        import_heading_stdlib="#region Standard Library",
+        import_heading_thirdparty="",
+        import_footer_stdlib="#endregion Standard Library",
+        import_footer_thirdparty="",
+    )
+    assert config.section_comments == ("#region Standard Library",)
+    assert config.section_comments_end == ("#endregion Standard Library",)
+
+    prefixed = Config(
+        comment_prefix="##",
+        import_heading_stdlib="Standard Library",
+        import_footer_stdlib="Standard Library End",
+    )
+    assert prefixed.section_comments == ("## Standard Library",)
+    assert prefixed.section_comments_end == ("## Standard Library End",)

@@ -219,7 +219,6 @@ def sort_stream(
         _internal_output.seek(0)
         try:
             compile(_internal_output.read(), content_source, "exec", flags=0, dont_inherit=True)
-            _internal_output.seek(0)
         except SyntaxError:  # pragma: no cover
             if extension not in CYTHON_EXTENSIONS:
                 raise IntroducedSyntaxErrors(content_source)
@@ -228,6 +227,7 @@ def sort_stream(
                     f"{content_source} Python AST errors found but ignored due to Cython extension",
                     stacklevel=2,
                 )
+        _internal_output.seek(0)
         if _internal_output != output_stream:
             output_stream.write(_internal_output.read())
 
@@ -260,7 +260,7 @@ def check_stream(
     if show_diff:
         input_stream = StringIO(input_stream.read())
 
-    with open(os.devnull, "w") as devnull:
+    with open(os.devnull, "w", encoding="utf-8") as devnull:
         changed: bool = sort_stream(
             input_stream=input_stream,
             output_stream=devnull,
@@ -353,14 +353,14 @@ def _in_memory_output_stream_context(source_file: File, changed: Event) -> Itera
 
     If `changed` is set at exit it will copy the stream to the source file.
     """
-    stream = StringIO(newline=None)
+    stream = StringIO(newline="")
     yield stream
 
     if changed.is_set():
-        stream.seek(0)
+        # Encode before opening the file, so an encoding error cannot leave it truncated.
+        output = stream.getvalue().encode(source_file.encoding)
         source_file.stream.close()
-        with source_file.path.open("w") as fs:
-            shutil.copyfileobj(stream, fs)
+        source_file.path.write_bytes(output)
 
 
 @contextlib.contextmanager

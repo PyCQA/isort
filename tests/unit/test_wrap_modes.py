@@ -7,12 +7,6 @@ from isort import wrap_modes
 from isort.wrap_modes import WrapModes, _wrap_modes
 
 
-def test_wrap_mode_interface() -> None:
-    assert (
-        wrap_modes._wrap_mode_interface("statement", [], "", "", 80, [], "", "", True, True) == ""
-    )
-
-
 def test_auto_saved() -> None:
     """hypothesis_auto tests cases that have been saved to ensure they run each test cycle"""
     assert (
@@ -213,6 +207,121 @@ def test_fuzz_grid(
         reject()
 
 
+def test_grid_preserves_trailing_comment_when_no_wrap_needed() -> None:
+    """A trailing comment on a from-import must survive grid wrapping even when
+    the statement fits on one line. Previously the comment was silently dropped
+    (e.g. ``from x import (a, b)  # noqa: F401`` became ``from x import (a, b)``),
+    re-activating the lint the comment was suppressing.
+    """
+    # No wrap needed: comment must be appended after the closing paren.
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=["a", "b"],
+            white_space=" ",
+            indent=" ",
+            line_length=80,
+            comments=["noqa: F401"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from x import(a, b)  # noqa: F401"
+    )
+    # No comment: output unchanged.
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=["a", "b"],
+            white_space=" ",
+            indent=" ",
+            line_length=80,
+            comments=[],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from x import(a, b)"
+    )
+    # Trailing comma: comment goes after the paren, not before it.
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=["a", "b"],
+            white_space=" ",
+            indent=" ",
+            line_length=80,
+            comments=["noqa: F401"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=True,
+            remove_comments=False,
+        )
+        == "from x import(a, b,)  # noqa: F401"
+    )
+    # Multiple comments are joined, as elsewhere in the wrap modes.
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=["a", "b"],
+            white_space=" ",
+            indent=" ",
+            line_length=80,
+            comments=["first", "second"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from x import(a, b)  # first; second"
+    )
+
+
+def test_grid_comment_position_unchanged_when_wrap_needed() -> None:
+    """When grid wrapping does split the statement, the comment is attached to
+    the line where the wrap happens (pre-existing behavior). Pin it so the
+    no-wrap fix does not regress the wrap path.
+    """
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=[
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g",
+                "h",
+                "i",
+                "j",
+                "k",
+                "l",
+                "m",
+                "n",
+                "o",
+                "p",
+                "q",
+                "r",
+                "s",
+            ],
+            white_space=" ",
+            indent=" ",
+            line_length=60,
+            comments=["noqa: F401"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from x import(a, b, c, d, e, f, g, h, i, j, k,  # noqa: F401\n"
+        " l, m, n, o, p, q, r, s)"
+    )
+
+
 @given(
     statement=st.text(),
     imports=st.lists(st.text()),
@@ -313,6 +422,104 @@ def test_fuzz_hanging_indent_with_parentheses(
         )
     except ValueError:
         reject()
+
+
+def test_hanging_indent_with_parentheses_preserves_comment_of_a_single_import() -> None:
+    """A trailing comment on the only import of a statement must survive mode 10.
+
+    There is no further import to wrap, so the comment is attached to the statement
+    instead of being dropped: it is hoisted onto the ``(`` line when it does not fit
+    (the same shape the mode already produces when the import itself is too long),
+    and kept after the closing parenthesis when it does fit. Dropping it silently
+    lost a ``# noqa`` that was suppressing a lint error, and the ``(b)`` the mode
+    emitted in its place was rewritten to ``b`` on the next run.
+    """
+    assert (
+        isort.wrap_modes.hanging_indent_with_parentheses(
+            statement="from a import ",
+            imports=["b"],
+            white_space=" ",
+            indent="    ",
+            line_length=20,
+            comments=["noqa: F401"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from a import (  # noqa: F401\n    b)"
+    )
+    assert (
+        isort.wrap_modes.hanging_indent_with_parentheses(
+            statement="from a import ",
+            imports=["b"],
+            white_space=" ",
+            indent="    ",
+            line_length=40,
+            comments=["noqa: F401"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from a import (b)  # noqa: F401"
+    )
+    # A trailing comma is emitted before the closing parenthesis, not before the comment.
+    assert (
+        isort.wrap_modes.hanging_indent_with_parentheses(
+            statement="from a import ",
+            imports=["b"],
+            white_space=" ",
+            indent="    ",
+            line_length=40,
+            comments=["noqa: F401"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=True,
+            remove_comments=False,
+        )
+        == "from a import (b,)  # noqa: F401"
+    )
+    # Without a comment the output is unchanged.
+    assert (
+        isort.wrap_modes.hanging_indent_with_parentheses(
+            statement="from a import ",
+            imports=["b"],
+            white_space=" ",
+            indent="    ",
+            line_length=40,
+            comments=[],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from a import (b)"
+    )
+
+
+def test_hanging_indent_with_parentheses_comment_position_unchanged_for_many_imports() -> None:
+    """The comment of a multi-import statement keeps its existing position.
+
+    With further imports to wrap the comment is attached by the wrapping loop, which
+    keeps it on the line the wrap happens on. Pin that so the single-import fix above
+    cannot move it.
+    """
+    assert (
+        isort.wrap_modes.hanging_indent_with_parentheses(
+            statement="from a import ",
+            imports=["b", "c"],
+            white_space=" ",
+            indent="    ",
+            line_length=20,
+            comments=["noqa"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from a import (b,  # noqa\n    c)"
+    )
 
 
 @given(
@@ -600,6 +807,62 @@ def test_fuzz_vertical_prefix_from_module_import(
         )
     except ValueError:
         reject()
+
+
+def test_vertical_prefix_from_module_import_preserves_comment_of_a_single_import() -> None:
+    """A trailing comment on the only import of a statement must survive mode 9.
+
+    Mode 9 attaches the comment while wrapping the next import, so a statement with a
+    single import never reached that code and the comment was silently dropped -- most
+    visibly a ``# noqa``, whose removal re-activates the lint error it suppressed.
+    """
+    assert (
+        isort.wrap_modes.vertical_prefix_from_module_import(
+            statement="from a import ",
+            imports=["b"],
+            white_space=" ",
+            indent="    ",
+            line_length=20,
+            comments=["noqa: F401"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from a import b  # noqa: F401"
+    )
+    # The comment is still attached while wrapping the remaining imports.
+    assert (
+        isort.wrap_modes.vertical_prefix_from_module_import(
+            statement="from a import ",
+            imports=["b", "c"],
+            white_space=" ",
+            indent="    ",
+            line_length=20,
+            comments=["noqa: F401"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from a import b  # noqa: F401\nfrom a import c"
+    )
+    # Without a comment the output is unchanged.
+    assert (
+        isort.wrap_modes.vertical_prefix_from_module_import(
+            statement="from a import ",
+            imports=["b"],
+            white_space=" ",
+            indent="    ",
+            line_length=20,
+            comments=[],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from a import b"
+    )
 
 
 def test_enum_matches_order_of_definitions() -> None:

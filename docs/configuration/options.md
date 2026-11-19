@@ -44,16 +44,38 @@ py_version=39
 
 ## Force To Top
 
-Force specific imports to the top of their appropriate section.
+Force specific imports to the top of their appropriate section. The order of specified modules is preserved at the top of the section.
 
 **Type:** List of Strings  
-**Default:** `frozenset()`  
+**Default:** `()`
 **Config default:** `[]`  
 **Python & Config File Name:** force_to_top  
 **CLI Flags:**
 
 - -t
 - --top
+
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+force_to_top=torch,tensorflow
+
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+force_to_top = ["torch", "tensorflow"]
+
+```
+
+### Example cli usage
+
+`isort -t torch -t tensorflow`
 
 ## Skip
 
@@ -524,7 +546,7 @@ forced_separate = ["glob_exp1", "glob_exp2"]
 
 ## Indent
 
-String to place for indents defaults to "    " (4 spaces).
+String to place for indents defaults to "    " (4 spaces). Accepts a number of spaces, `tab` (or `\t`) for a tab, or a literal string. Only used by the hanging indent multi_line_output modes; the grid and vertical modes align wrapped imports with the opening parenthesis instead.
 
 **Type:** String  
 **Default:** `    `  

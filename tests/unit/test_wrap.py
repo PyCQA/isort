@@ -52,6 +52,17 @@ def test_line__comment_with_brackets__expects_unchanged_comment(
     assert wrap.line(content=content, line_separator="\n", config=config) == expected
 
 
+@pytest.mark.parametrize(
+    "multi_line_output",
+    [WrapModes.VERTICAL_HANGING_INDENT, WrapModes.VERTICAL, WrapModes.GRID],
+)
+def test_line_already_wrapped_statement_is_left_alone(multi_line_output: WrapModes) -> None:
+    content = "from package.module import (alpha, beta, gamma, delta)"
+    config = Config(line_length=35, multi_line_output=multi_line_output)
+
+    assert wrap.line(content=content, line_separator="\n", config=config) == content
+
+
 def test_line_star_import_wrapped_with_backslash() -> None:
     """Star imports should use backslashes when parentheses were not requested."""
     content = "from very.very.very.very.very.very.very.very.very.long.line import *"

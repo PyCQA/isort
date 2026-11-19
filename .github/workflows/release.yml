@@ -22,7 +22,7 @@ jobs:
     steps:
       - &download-release-assets
         name: Download release assets
-        uses: actions/download-artifact@v8.0.1
+        uses: actions/download-artifact@v8.0.2
         with:
           merge-multiple: true
           path: dist/

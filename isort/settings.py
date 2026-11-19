@@ -6,11 +6,11 @@ Defines how the default settings for isort should be loaded
 import configparser
 import fnmatch
 import os
-import posixpath
 import re
 import stat
 import subprocess  # nosec # Needed for gitignore support.
 import sys
+import tomllib
 from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass, field
 from importlib.metadata import EntryPoints
@@ -36,12 +36,6 @@ from .utils import Trie
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    from ._vendored import tomli as tomllib
-
-_SHEBANG_RE = re.compile(rb"^#!.*\bpython[23w]?\b")
 CYTHON_EXTENSIONS = frozenset({"pyx", "pxd"})
 SUPPORTED_EXTENSIONS = frozenset({"py", "pyi", *CYTHON_EXTENSIONS})
 BLOCKED_EXTENSIONS = frozenset({"pex"})
@@ -107,6 +101,15 @@ KNOWN_SECTION_MAPPING: dict[str, str] = {
 
 RUNTIME_SOURCE = "runtime"
 
+
+def _normalize_force_to_top(value: Any) -> tuple[str, ...]:
+    if isinstance(value, str):
+        value = _as_list(value)
+    if isinstance(value, (set, frozenset)):
+        return tuple(sorted(value))
+    return tuple(value)
+
+
 _STR_BOOLEAN_MAPPING = {
     "y": True,
     "yes": True,
@@ -134,7 +137,7 @@ class _Config:
     """
 
     py_version: str = "3"
-    force_to_top: frozenset[str] = frozenset()
+    force_to_top: tuple[str, ...] = ()
     skip: frozenset[str] = DEFAULT_SKIP
     extend_skip: frozenset[str] = frozenset()
     skip_glob: frozenset[str] = frozenset()
@@ -195,7 +198,7 @@ class _Config:
     no_inline_sort: bool = False
     ignore_comments: bool = False
     case_sensitive: bool = False
-    sources: tuple[dict[str, Any], ...] = ()
+    sources: tuple[dict[str, object], ...] = ()
     virtual_env: str = ""
     conda_env: str = ""
     ensure_newline_before_comments: bool = False
@@ -229,7 +232,7 @@ class _Config:
     overwrite_in_place: bool = False
     reverse_sort: bool = False
     star_first: bool = False
-    git_ls_files: dict[Path, set[str]] = field(default_factory=dict)
+    git_ls_files: dict[Path, set[Path]] = field(default_factory=dict)
     format_error: str = "{error}: {message}"
     format_success: str = "{success}: {message}"
     sort_order: str = "natural"
@@ -298,6 +301,7 @@ class Config(_Config):
         if config:
             config_vars = asdict(config).copy()
             config_vars.update(config_overrides)
+            config_vars["force_to_top"] = _normalize_force_to_top(config_vars["force_to_top"])
             config_vars["py_version"] = config_vars["py_version"].replace("py", "")
             super().__init__(**config_vars)
             return
@@ -365,6 +369,8 @@ class Config(_Config):
                 indent = indent.strip("'").strip('"')
                 if indent.lower() == "tab":
                     indent = "\t"
+                else:
+                    indent = indent.replace("\\t", "\t")
             combined_config["indent"] = indent
 
         known_other = {}
@@ -416,7 +422,16 @@ class Config(_Config):
             if default_value is None:
                 continue
 
-            combined_config[key] = type(default_value)(value)
+            if isinstance(value, str) and isinstance(default_value, (frozenset, tuple)):
+                # A single string holds a list of items for list-like settings, just as it does
+                # in a configuration file (e.g. `no_lines_before=LOCALFOLDER`). Without this it
+                # would be iterated over character by character instead.
+                value = _as_list(value)
+
+            if key == "force_to_top":
+                combined_config[key] = _normalize_force_to_top(value)
+            else:
+                combined_config[key] = type(default_value)(value)
 
         for section in combined_config.get("sections", ()):
             if section in SECTION_DEFAULTS:
@@ -512,12 +527,7 @@ class Config(_Config):
         except OSError:
             pass
 
-        try:
-            with open(file_name, "rb") as fp:
-                line = fp.readline(100)
-        except OSError:
-            return False
-        return bool(_SHEBANG_RE.match(line))
+        return False
 
     def _check_folder_git_ls_files(self, folder: str) -> Path | None:
         env = {**os.environ, "LANG": "C.UTF-8"}
@@ -551,29 +561,39 @@ class Config(_Config):
             .split("\0")
         )
 
-        self.git_ls_files[git_folder] = {
-            str(git_folder / Path(f)) for f in tracked_files + tracked_files_others
-        }
+        # the folders holding those files are allowed too, so that folders without
+        # any of them (e.g. ignored ones) are skipped instead of walked file by file
+        allowed = {git_folder}
+        for f in tracked_files + tracked_files_others:
+            path = git_folder / Path(f)
+            allowed.add(path)
+            for parent in path.parents:
+                if parent in allowed:
+                    break
+                allowed.add(parent)
+
+        self.git_ls_files[git_folder] = allowed
         return git_folder
 
     def is_skipped(self, file_path: Path) -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""
+        if self._matches_skip(file_path):
+            return True
+
+        if not (file_path.is_file() or file_path.is_dir() or file_path.is_symlink()):
+            return True
+
+        return self._is_gitignored(file_path)
+
+    def _matches_skip(self, file_path: Path) -> bool:
+        """Match configured paths, path components, and glob patterns."""
         if self.directory and Path(self.directory) in file_path.resolve().parents:
             file_name = os.path.relpath(file_path.resolve(), self.directory)
         else:
             file_name = str(file_path)
 
-        os_path = str(file_path)
-
-        # Normalize the path to POSIX-style for consistent comparison with skip paths and globs
-        normalized_path = os_path.replace("\\", "/")
-        if normalized_path[1:2] == ":":
-            normalized_path = normalized_path[2:]
-        normalized_path = posixpath.abspath(normalized_path)
-
-        for skip_path in self.posix_skips:
-            if normalized_path == skip_path:
-                return True
+        if Path(os.path.abspath(file_path)).as_posix() in self.posix_skips:
+            return True
 
         position = os.path.split(file_name)
         while position[1]:
@@ -585,31 +605,29 @@ class Config(_Config):
             if fnmatch.fnmatch(file_name, sglob) or fnmatch.fnmatch("/" + file_name, sglob):
                 return True
 
-        if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
+        return False
+
+    def _is_gitignored(self, file_path: Path) -> bool:
+        """Check a path against the cached tracked and non-ignored Git files."""
+        if not self.skip_gitignore:
+            return False
+
+        if file_path.name == ".git":  # pragma: no cover
             return True
 
-        if self.skip_gitignore:
-            if file_path.name == ".git":  # pragma: no cover
-                return True
+        git_folder: Path | None
+        file_paths = [file_path, file_path.resolve()]
+        for folder in self.git_ls_files:
+            if any(folder in path.parents for path in file_paths):
+                git_folder = folder
+                break
+        else:
+            git_folder = self._check_folder_git_ls_files(str(file_path.parent))
 
-            git_folder = None
+        # git_ls_files are good files you should parse. If you're not in the allow list, skip.
 
-            file_paths = [file_path, file_path.resolve()]
-            for folder in self.git_ls_files:
-                if any(folder in path.parents for path in file_paths):
-                    git_folder = folder
-                    break
-            else:
-                git_folder = self._check_folder_git_ls_files(str(file_path.parent))
-
-            # git_ls_files are good files you should parse. If you're not in the allow list, skip.
-
-            if (
-                git_folder
-                and not file_path.is_dir()
-                and str(file_path.resolve()) not in self.git_ls_files[git_folder]
-            ):
-                return True
+        if git_folder and file_path.resolve() not in self.git_ls_files[git_folder]:
+            return True
 
         return False
 
@@ -642,7 +660,11 @@ class Config(_Config):
         if self._section_comments is not None:
             return self._section_comments
 
-        self._section_comments = tuple(f"# {heading}" for heading in self.import_headings.values())
+        self._section_comments = tuple(
+            format_section_comment(self.comment_prefix, heading)
+            for heading in self.import_headings.values()
+            if heading.strip()
+        )
         return self._section_comments
 
     @property
@@ -650,7 +672,11 @@ class Config(_Config):
         if self._section_comments_end is not None:
             return self._section_comments_end
 
-        self._section_comments_end = tuple(f"# {footer}" for footer in self.import_footers.values())
+        self._section_comments_end = tuple(
+            format_section_comment(self.comment_prefix, footer)
+            for footer in self.import_footers.values()
+            if footer.strip()
+        )
         return self._section_comments_end
 
     @property
@@ -668,7 +694,9 @@ class Config(_Config):
             return self._posix_skips
 
         self._posix_skips = frozenset(
-            posixpath.abspath(skip_path.replace("\\", "/")) for skip_path in self.skips
+            Path(os.path.abspath(path)).as_posix()
+            for skip_path in self.skips
+            for path in (skip_path, skip_path.replace("\\", "/"))
         )
         return self._posix_skips
 
@@ -901,6 +929,16 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, obj
                 settings[key] = existing_value_type(value)
 
     return settings
+
+
+def format_section_comment(comment_prefix: str, comment: str) -> str:
+    """Format a standalone section heading or footer using ``comment_prefix``."""
+    prefix = comment_prefix.lstrip()
+    if not prefix:
+        return comment
+    if prefix.endswith((" ", "\t")):
+        return f"{prefix}{comment}"
+    return f"{prefix} {comment}"
 
 
 def _as_bool(value: object) -> bool:

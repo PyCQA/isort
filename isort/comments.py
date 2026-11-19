@@ -1,3 +1,6 @@
+from collections.abc import Sequence
+
+
 def parse(line: str) -> tuple[str, str | None]:
     """Parses import lines for comments and returns back the
     import statement and the associated comment.
@@ -13,7 +16,7 @@ def parse(line: str) -> tuple[str, str | None]:
 
 
 def add_to_line(
-    comments: list[str] | None,
+    comments: Sequence[str] | None,
     original_string: str = "",
     removed: bool = False,
     comment_prefix: str = "",
@@ -27,7 +30,8 @@ def add_to_line(
 
     unique_comments: list[str] = []
     for comment in comments:
-        if comment not in unique_comments:
+        # Skip empty comments to avoid dangling `;` separators
+        if comment and comment not in unique_comments:
             unique_comments.append(comment)
     comment_text = "; ".join(unique_comments)
     base, existing_comment = parse(original_string)

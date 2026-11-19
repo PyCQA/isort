@@ -133,10 +133,20 @@ description_mapping = {
     "indented_import_headings": "If `True` isort will apply import headings to indented imports the same way it does unindented ones.",
     "import_headings": "A mapping of import sections to import heading comments that should show above them.",
     "import_footers": "A mapping of import sections to import footer comments that should show below them.",
+    "force_to_top": "Force specific imports to the top of their appropriate section. The order of specified modules is preserved at the top of the section.",
 }
 
 example_mapping: dict[str, Example]
 example_mapping = {
+    "force_to_top": Example(
+        cfg="""
+force_to_top=torch,tensorflow
+""",
+        pyproject_toml="""
+force_to_top = ["torch", "tensorflow"]
+""",
+        cli="isort -t torch -t tensorflow",
+    ),
     "skip": Example(
         cfg="""
 skip=.gitignore,.dockerignore""",
@@ -296,7 +306,6 @@ blocked_extensions = ["pyw", "pyc"]
             known_airflow = ['airflow']""",
     ),
     "multi_line_output": Example(cfg="multi_line_output=3", pyproject_toml="multi_line_output = 3"),
-    "show_version": Example(cli="isort --version"),
     "py_version": Example(
         cli="isort --py 39",
         pyproject_toml="""

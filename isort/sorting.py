@@ -1,6 +1,5 @@
 import re
 from collections.abc import Callable, Iterable
-from typing import Any
 
 from .settings import Config
 
@@ -13,7 +12,7 @@ def module_key(
     config: Config,
     sub_imports: bool = False,
     ignore_case: bool = False,
-    section_name: Any | None = None,
+    section_name: str | None = None,
     straight_import: bool | None = False,
 ) -> str:
     match = re.match(r"^(\.+)\s*(.*)", module_name)
@@ -23,9 +22,9 @@ def module_key(
 
     prefix = ""
     if ignore_case:
-        module_name = str(module_name).lower()
+        module_name = module_name.lower()
     else:
-        module_name = str(module_name)
+        module_name = module_name
 
     if sub_imports and config.order_by_type:
         if module_name in config.constants:
@@ -49,7 +48,11 @@ def module_key(
         or str(section_name).lower() in config.length_sort_sections
     )
     _length_sort_maybe = (str(len(module_name)) + ":" + module_name) if length_sort else module_name
-    return f"{(module_name in config.force_to_top and 'A') or 'B'}{prefix}{_length_sort_maybe}"
+    if module_name in config.force_to_top:
+        top_prefix = f"A{config.force_to_top.index(module_name):05d}_"
+    else:
+        top_prefix = "B"
+    return f"{top_prefix}{prefix}{_length_sort_maybe}"
 
 
 def section_key(line: str, config: Config) -> str:
@@ -74,8 +77,9 @@ def section_key(line: str, config: Config) -> str:
     if config.sort_relative_in_force_sorted_sections:
         sep = " " if config.reverse_relative else "_"
         line = re.sub(r"^(\.+)", rf"\1{sep}", line)
-    if line.split(" ")[0] in config.force_to_top:
-        section = "A"
+    module_name = line.split(" ")[0]
+    if module_name in config.force_to_top:
+        section = f"A{config.force_to_top.index(module_name):05d}_"
     # * If honor_case_in_force_sorted_sections is true, and case_sensitive and
     #   order_by_type are different, only ignore case in part of the line.
     # * Otherwise, let order_by_type decide the sorting of the whole line. This
@@ -100,29 +104,29 @@ def section_key(line: str, config: Config) -> str:
 def sort(
     config: Config,
     to_sort: Iterable[str],
-    key: Callable[[str], Any] | None = None,
+    key: Callable[[str], str] | None = None,
     reverse: bool = False,
 ) -> list[str]:
     return config.sorting_function(to_sort, key=key, reverse=reverse)
 
 
 def naturally(
-    to_sort: Iterable[str], key: Callable[[str], Any] | None = None, reverse: bool = False
+    to_sort: Iterable[str], key: Callable[[str], str] | None = None, reverse: bool = False
 ) -> list[str]:
     """Returns a naturally sorted list"""
     if key is None:
         key_callback = _natural_keys
     else:
 
-        def key_callback(text: str) -> list[Any]:
+        def key_callback(text: str) -> list[int | str]:
             return _natural_keys(key(text))
 
     return sorted(to_sort, key=key_callback, reverse=reverse)
 
 
-def _atoi(text: str) -> Any:
+def _atoi(text: str) -> int | str:
     return int(text) if text.isdigit() else text
 
 
-def _natural_keys(text: str) -> list[Any]:
+def _natural_keys(text: str) -> list[int | str]:
     return [_atoi(c) for c in re.split(r"(\d+)", text)]

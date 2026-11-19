@@ -1,5 +1,6 @@
 import textwrap
 from collections.abc import Iterator
+from functools import lru_cache
 from io import StringIO
 from itertools import chain
 from typing import NamedTuple, TextIO
@@ -69,21 +70,24 @@ def _has_split_comment(import_statement: str) -> bool:
 
 def _read_import_statement(line: str, input_stream: TextIO) -> tuple[str, str]:
     """Read a complete import and retain its last physical line for parser state."""
-    import_statement = line
-    stripped_line = line.strip().split("#")[0]
-    while stripped_line.endswith("\\") or ("(" in stripped_line and ")" not in stripped_line):
-        if stripped_line.endswith("\\"):
-            while stripped_line and stripped_line.endswith("\\"):
-                line = input_stream.readline()
-                stripped_line = line.strip().split("#")[0]
-                import_statement += line
-        else:
-            while ")" not in stripped_line:
-                line = input_stream.readline()
-                if not line:
-                    raise ExistingSyntaxErrors("Parenthesis is not closed")
-                stripped_line = line.strip().split("#")[0]
-                import_statement += line
+    import_statement = ""
+    open_parentheses = 0
+    while line:
+        import_statement += line
+        parts = line.split("#", 1)[0].split(";")
+        import_parts = [parts[0]]
+        for part in parts[1:]:
+            # Imports cannot contain strings, but subsequent executable statements can.
+            if not part.lstrip().startswith(IMPORT_START_IDENTIFIERS):
+                break
+            import_parts.append(part)
+        import_line = ";".join(import_parts).rstrip()
+        open_parentheses += import_line.count("(") - import_line.count(")")
+        if open_parentheses <= 0 and not import_line.endswith("\\"):
+            break
+        line = input_stream.readline()
+    if open_parentheses > 0:
+        raise ExistingSyntaxErrors("Parenthesis is not closed")
     return import_statement, line
 
 
@@ -119,7 +123,10 @@ def _float_to_top(
                     before = before[: -len(parsed.line_separator)]
                 extra_space = extra_space.replace(parsed.line_separator, "", 1)
                 sorted_output = output.sorted_imports(
-                    parsed, config, extension, import_type="import"
+                    parsed,
+                    Config(config=config, lines_before_imports=-1),
+                    extension,
+                    import_type="import",
                 )
                 made_changes = made_changes or _has_changed(
                     before=before,
@@ -234,6 +241,7 @@ def process(
     import_section: str = ""
     next_import_section: str = ""
     next_cimports: bool = False
+    next_indent: str = ""
     in_quote: str = ""
     was_in_quote: bool = False
     contains_imports: bool = False
@@ -464,7 +472,12 @@ def process(
                             and import_section
                             and (not did_contain_imports or len(new_indent) < len(indent))
                         ):
-                            indent = new_indent
+                            # Imports already collected at the old indentation are still
+                            # sorted at that indentation; the new one applies from the
+                            # next section on. See #2010.
+                            next_indent = new_indent
+                            if not (import_section and did_contain_imports):
+                                indent = new_indent
                             if import_section:
                                 next_cimports = cimport_statement
                                 next_import_section = import_statement
@@ -486,7 +499,11 @@ def process(
         if not_imports:
             above_import_section: str = ""
             if not was_in_quote and config.lines_before_imports > -1:
-                if line.strip() == "" and not end_of_file:
+                # A pending ``next_import_section`` means ``line`` was emptied because an
+                # import at another indentation level starts a new section; it is not a
+                # blank line and must not be deferred, or the current section is only
+                # flushed at the end of the file and the next one is never written.
+                if line.strip() == "" and not end_of_file and not next_import_section:
                     lines_before += line
                     continue
                 if not import_section:
@@ -557,6 +574,10 @@ def process(
                     )
                     if not (import_section.strip() and not sorted_import_section):
                         if indent:
+                            if next_import_section and not next_indent:
+                                # The blank lines before the less indented section that
+                                # follows are written with that section.
+                                trailing_whitespace = line_separator
                             sorted_import_section = (
                                 leading_whitespace
                                 + textwrap.indent(sorted_import_section, indent).strip()
@@ -570,7 +591,14 @@ def process(
                             ignore_whitespace=config.ignore_whitespace,
                         )
                         output_stream.write(sorted_import_section)
-                        if not line and not indent and next_import_section:
+                        if (
+                            not line
+                            and not next_indent
+                            and next_import_section
+                            and config.lines_before_imports == -1
+                        ):
+                            # With ``lines_before_imports`` set, the next section is
+                            # already preceded by exactly that many blank lines.
                             output_stream.write(line_separator)
 
                 if indent:
@@ -579,6 +607,7 @@ def process(
                         indent = ""
 
                 if next_import_section:
+                    indent = next_indent
                     cimports = next_cimports
                     contains_imports = True
                 else:
@@ -619,6 +648,11 @@ def _indented_config(config: Config, indent: str) -> Config:
     if not indent:
         return config
 
+    return _cached_indented_config(config, indent)
+
+
+@lru_cache(maxsize=16)
+def _cached_indented_config(config: Config, indent: str) -> Config:
     return Config(
         config=config,
         line_length=max(config.line_length - len(indent), 0),

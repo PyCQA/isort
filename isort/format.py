@@ -134,7 +134,7 @@ class ColoramaPrinter(BasicPrinter):
     def style_text(text: str, style: str | None = None) -> str:
         if style is None:
             return text
-        return style + text + str(colorama.Style.RESET_ALL)
+        return style + text + colorama.Style.RESET_ALL
 
     def diff_line(self, line: str) -> None:
         style = None
