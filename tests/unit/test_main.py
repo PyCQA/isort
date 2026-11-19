@@ -143,6 +143,8 @@ def test_parse_args() -> None:
     assert main.parse_args(["--overwrite-in-place"]) == {"overwrite_in_place": True}
     assert main.parse_args(["--from-first"]) == {"from_first": True}
     assert main.parse_args(["--resolve-all-configs"]) == {"resolve_all_configs": True}
+    assert main.parse_args(["--lines-between-types", "0"]) == {"lines_between_types": 0}
+    assert main.parse_args(["--lbt", "0"]) == {"lines_between_types": 0}
 
 
 def test_ascii_art(capsys: pytest.CaptureFixture[str]) -> None:
