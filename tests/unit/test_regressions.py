@@ -3276,3 +3276,55 @@ def test_trailing_comma_on_aliased_only_import_does_not_explode_plain_imports_is
     assert isort.code(
         "from requests import (Z as Z,)\n", profile="black", remove_redundant_aliases=True
     ) == ("from requests import (\n    Z,\n)\n")
+
+
+def test_add_imports_is_idempotent_with_isort_off_issue_2799() -> None:
+    """``add_imports`` must not be injected into a ``# isort: off`` region.
+
+    Lines inside the region are never parsed as imports, so an import written there is not
+    recognised as already present, and was added again on every run.
+    """
+    disabled = "# isort: off\nimport b\nimport a\n# isort: on\n"
+    first_pass = isort.code(disabled, add_imports=["import foo"])
+    assert first_pass.count("import foo") == 1
+    assert disabled in first_pass  # the disabled region is left untouched
+    assert isort.code(first_pass, add_imports=["import foo"]) == first_pass
+    assert isort.check_code(first_pass, add_imports=["import foo"])
+
+    # The region does not have to open the file.
+    with_leading_import = "import os\n\n# isort: off\nimport b\nimport a\n# isort: on\n"
+    first_pass = isort.code(with_leading_import, add_imports=["import foo"])
+    assert first_pass.count("import foo") == 1
+    assert "# isort: off\nimport b\nimport a\n# isort: on\n" in first_pass
+    assert isort.code(first_pass, add_imports=["import foo"]) == first_pass
+
+
+def test_add_imports_after_isort_on_near_top_of_file_issue_2799() -> None:
+    """``# isort: on`` within the first lines must still switch isort back on.
+
+    There it is also read as part of the top-of-file comment, which used to skip the check that
+    ends the disabled region, so isort stayed off (and dropped ``add_imports``) for the whole file.
+    """
+    assert isort.code("# isort: off\nimport b\n# isort: on\nimport d\nimport c\n") == (
+        "# isort: off\nimport b\n# isort: on\nimport c\nimport d\n"
+    )
+    assert isort.code("# isort: off\n# isort: on\nimport d\nimport c\n") == (
+        "# isort: off\n# isort: on\nimport c\nimport d\n"
+    )
+
+    for source in (
+        "# isort: off\nimport b\n# isort: on\nimport c\n",
+        "# isort: off\nimport b\n# isort: on\nx = 1\n",
+        "# isort: off\nimport b\n# isort: on\n\nimport c\n",
+        '"""doc"""\n# isort: off\nimport b\n# isort: on\nimport c\n',
+    ):
+        first_pass = isort.code(source, add_imports=["import foo"])
+        assert first_pass.count("import foo") == 1, source
+        assert "# isort: off\nimport b\n# isort: on\n" in first_pass, source
+        assert isort.code(first_pass, add_imports=["import foo"]) == first_pass, source
+
+
+def test_add_imports_is_not_added_to_a_file_that_stays_off_issue_2799() -> None:
+    """A file whose ``# isort: off`` region is never switched back on is left entirely alone."""
+    source = "# isort: off\nimport b\nimport a\n"
+    assert isort.code(source, add_imports=["import foo"]) == source
