@@ -57,3 +57,29 @@ def test_namespace_package_placement(examples_path: Path) -> None:
         assert place.module("root.nested", config=config) == "FIRSTPARTY"
         assert place.module("root.name", config=manual_namespace) == "THIRDPARTY"
         assert place.module("root.nested", config=config) == "FIRSTPARTY"
+
+
+def test_src_path_name_matching_thirdparty_not_firstparty(tmp_path: Path) -> None:
+    # A root directory whose name matches a module name must not cause that module
+    # to be identified as FIRSTPARTY unless the directory itself is a Python module/package.
+    root = tmp_path / "some_name"
+    root.mkdir()
+    (root / "pyproject.toml").write_text('[project]\nname = "package_name"\n', "utf-8")
+    pkg = root / "package_name"
+    pkg.mkdir()
+    (pkg / "__init__.py").touch()
+    (pkg / "file1.py").touch()
+
+    config = Config(src_paths=[root / "src", root])
+    assert place.module("package_name", config=config) == sections.FIRSTPARTY
+    assert place.module("some_name", config=config) == sections.THIRDPARTY
+
+    # Subdirectory with same name as third-party import but no __init__.py (issue #2247)
+    app_fastapi = tmp_path / "app" / "fastapi"
+    app_fastapi.mkdir(parents=True)
+    (app_fastapi / "same_dir_module.py").touch()
+    (app_fastapi / "main.py").touch()
+
+    config_2247 = Config(src_paths=[app_fastapi, tmp_path])
+    assert place.module("same_dir_module", config=config_2247) == sections.FIRSTPARTY
+    assert place.module("fastapi", config=config_2247) == sections.THIRDPARTY
