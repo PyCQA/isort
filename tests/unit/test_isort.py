@@ -6116,3 +6116,48 @@ def test_builtin_modules() -> None:
         "from python_none_objects import NoneIterable\n"
     )
     assert isort.code(test_input) == test_output
+
+
+def test_force_alphabetical_sort_with_lines_between_types_issue_1972() -> None:
+    test_input = (
+        "import one\n"
+        "import two\n"
+        "from three import four\n"
+        "from five import six\n\n"
+        "HELLO = 'world'\n"
+    )
+    # Default force_alphabetical_sort keeps 1 empty line between from and straight imports
+    expected_default = (
+        "from five import six\n"
+        "from three import four\n\n"
+        "import one\n"
+        "import two\n\n"
+        "HELLO = 'world'\n"
+    )
+    assert isort.code(test_input, force_alphabetical_sort=True) == expected_default
+
+    # Explicitly setting lines_between_types=0 with force_alphabetical_sort=True removes the empty line
+    expected_zero = (
+        "from five import six\n"
+        "from three import four\n"
+        "import one\n"
+        "import two\n\n"
+        "HELLO = 'world'\n"
+    )
+    assert (
+        isort.code(test_input, force_alphabetical_sort=True, lines_between_types=0) == expected_zero
+    )
+    config = isort.Config(force_alphabetical_sort=True, lines_between_types=0)
+    assert isort.code(test_input, config=config) == expected_zero
+
+    # Custom lines_between_types (e.g. 2) is also respected
+    expected_two = (
+        "from five import six\n"
+        "from three import four\n\n\n"
+        "import one\n"
+        "import two\n\n"
+        "HELLO = 'world'\n"
+    )
+    assert (
+        isort.code(test_input, force_alphabetical_sort=True, lines_between_types=2) == expected_two
+    )

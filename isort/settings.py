@@ -265,7 +265,8 @@ class _Config:
         if self.force_alphabetical_sort:
             object.__setattr__(self, "force_alphabetical_sort_within_sections", True)
             object.__setattr__(self, "no_sections", True)
-            object.__setattr__(self, "lines_between_types", 1)
+            if not any("lines_between_types" in source for source in self.sources[1:]):
+                object.__setattr__(self, "lines_between_types", 1)
             object.__setattr__(self, "from_first", True)
         if self.wrap_length > self.line_length:
             raise ValueError(

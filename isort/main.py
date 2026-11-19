@@ -888,7 +888,11 @@ def parse_args(argv: Sequence[str] | None = None) -> dict[str, Any]:
     argv = sys.argv[1:] if argv is None else list(argv)
 
     parser = _build_arg_parser()
-    arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
+    arguments = {
+        key: value
+        for key, value in vars(parser.parse_args(argv)).items()
+        if value or (value == 0 and not isinstance(value, bool))
+    }
     if "dont_order_by_type" in arguments:
         arguments["order_by_type"] = False
         del arguments["dont_order_by_type"]
