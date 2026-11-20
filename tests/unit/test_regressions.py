@@ -3250,6 +3250,22 @@ def test_aliased_import_with_an_opening_line_comment_stays_within_line_length_is
     assert isort.code(expected, profile="black") == expected
 
 
+def test_plain_import_next_to_an_alias_is_kept_when_the_module_is_also_aliased() -> None:
+    """A plain import that shares its line with an alias was treated as alias-only."""
+    assert isort.code("import x as y, a\nimport a as b\n") == (
+        "import a\nimport a as b\nimport x as y\n"
+    )
+    assert isort.code("import a as b, a\n") == "import a\nimport a as b\n"
+    assert isort.code("import a, a as b\n") == "import a\nimport a as b\n"
+    assert isort.code("lazy import x as y, a\nlazy import a as b\n") == (
+        "lazy import a\nlazy import a as b\nlazy import x as y\n"
+    )
+    assert (
+        isort.code("import a as a\nimport a as b\n", remove_redundant_aliases=True)
+        == "import a\nimport a as b\n"
+    )
+
+
 def test_trailing_comma_on_aliased_only_import_does_not_explode_plain_imports_issue_2793() -> None:
     """A trailing comma recorded on an alias-only statement exploded the module's plain imports.
 
@@ -3276,3 +3292,4 @@ def test_trailing_comma_on_aliased_only_import_does_not_explode_plain_imports_is
     assert isort.code(
         "from requests import (Z as Z,)\n", profile="black", remove_redundant_aliases=True
     ) == ("from requests import (\n    Z,\n)\n")
+
