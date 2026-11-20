@@ -31,6 +31,7 @@ Home
     configuration/black_compatibility
     Config files <configuration/config_files>
     configuration/custom_sections_and_ordering
+    configuration/excluding_files
     configuration/git_hook
     configuration/github_action
     configuration/multi_line_output_modes
