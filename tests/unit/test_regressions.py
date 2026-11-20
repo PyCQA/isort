@@ -3345,3 +3345,99 @@ def test_name_level_type_ignore_is_idempotent_issue_2694() -> None:
     )
     assert isort.code(middle, multi_line_output=1, line_length=88) == vertical
     assert isort.code(vertical, multi_line_output=1, line_length=88) == vertical
+
+    # A later name with the same type: ignore, followed by an uncommented name,
+    # must not be treated as a new singleton. That left the earlier name out on
+    # the first pass and folded it into the comment on the second.
+    same_comment_source = (
+        "from x import (\n    a,\n    b,  # type: ignore[x]\n    c,  # type: ignore[x]\n    d,\n)\n"
+    )
+    same_comment_lines = (
+        "from x import a\n"
+        "from x import b  # type: ignore[x]\n"
+        "from x import c  # type: ignore[x]\n"
+        "from x import d\n"
+    )
+    same_comment_black = "from x import (  # type: ignore[x]\n    a,\n    b,\n    c,\n    d,\n)\n"
+    same_comment_flat = "from x import a, b, c, d  # type: ignore[x]\n"
+    assert isort.code(same_comment_source, profile="black") == same_comment_black
+    assert isort.code(same_comment_black, profile="black") == same_comment_black
+    assert isort.code(same_comment_lines, profile="black") == same_comment_flat
+    assert isort.code(same_comment_source) == same_comment_flat
+    assert isort.code(same_comment_lines) == same_comment_flat
+    assert isort.code(same_comment_flat) == same_comment_flat
+    for multi_line_output in (1, 3, 5):
+        assert (
+            isort.code(same_comment_source, multi_line_output=multi_line_output, line_length=88)
+            == same_comment_flat
+        )
+        assert (
+            isort.code(same_comment_lines, multi_line_output=multi_line_output, line_length=88)
+            == same_comment_flat
+        )
+        assert (
+            isort.code(same_comment_flat, multi_line_output=multi_line_output, line_length=88)
+            == same_comment_flat
+        )
+
+    assert isort.code(same_comment_flat, profile="black") == same_comment_flat
+
+    # Without a later uncommented name, the same comments stay on their own
+    # names. The first pass must not fold them together.
+    no_follower_source = (
+        "from x import (\n    a,\n    b,  # type: ignore[x]\n    c,  # type: ignore[x]\n)\n"
+    )
+    no_follower_lines = (
+        "from x import a\nfrom x import b  # type: ignore[x]\nfrom x import c  # type: ignore[x]\n"
+    )
+    no_follower_black = (
+        "from x import (\n    a,\n)\n"
+        "from x import b  # type: ignore[x]\n"
+        "from x import c  # type: ignore[x]\n"
+    )
+    assert isort.code(no_follower_source) == no_follower_lines
+    assert isort.code(no_follower_lines) == no_follower_lines
+    assert isort.code(no_follower_source, profile="black") == no_follower_black
+    assert isort.code(no_follower_black, profile="black") == no_follower_black
+    assert isort.code(no_follower_lines, profile="black") == no_follower_lines
+
+    # Two names that already carry the same type: ignore also stay split.
+    both_commented_source = (
+        "from x import (\n    a,  # type: ignore[x]\n    b,  # type: ignore[x]\n)\n"
+    )
+    both_commented = "from x import a  # type: ignore[x]\nfrom x import b  # type: ignore[x]\n"
+    assert isort.code(both_commented_source) == both_commented
+    assert isort.code(both_commented) == both_commented
+    assert isort.code(both_commented_source, profile="black") == both_commented
+    assert isort.code(both_commented, profile="black") == both_commented
+
+    # When a same-comment name sorts after the plain name, separate lines stay
+    # as two statements. That was already stable before this change.
+    sort_after_lines = (
+        "from x import a\n"
+        "from x import d  # type: ignore[x]\n"
+        "from x import b  # type: ignore[x]\n"
+        "from x import c\n"
+    )
+    sort_after_flat = (
+        "from x import a, b, c  # type: ignore[x]\nfrom x import d  # type: ignore[x]\n"
+    )
+    assert isort.code(sort_after_lines, profile="black") == sort_after_flat
+    assert isort.code(sort_after_flat, profile="black") == sort_after_flat
+    assert isort.code(sort_after_lines) == sort_after_flat
+    assert isort.code(sort_after_flat) == sort_after_flat
+
+    # Many identical type ignores plus one uncommented name must stay fast and
+    # settle in one pass.
+    many_names = [f"n{index:02d}" for index in range(30)]
+    many_source = "".join(
+        ["from x import a\n"]
+        + [f"from x import {name}  # type: ignore[x]\n" for name in many_names]
+        + ["from x import z\n"]
+    )
+    many_once = isort.code(many_source)
+    assert many_once.count("from x import") == 1
+    assert "type: ignore[x]" in many_once
+    assert isort.code(many_once) == many_once
+    for imported_name in ("a", *many_names, "z"):
+        assert imported_name in many_once

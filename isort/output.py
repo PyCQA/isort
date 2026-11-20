@@ -609,6 +609,21 @@ def _singleton_type_ignore_stays_on_name(
     return not hoists_to_parenthesis
 
 
+def _type_ignore_group_stays_separate(
+    import_start: str, group: list[str], comment: str, config: Config
+) -> bool:
+    """Return whether this predicted type-ignore group still carries the comment."""
+    if len(group) == 1:
+        return _singleton_type_ignore_stays_on_name(import_start, group[0], comment, config)
+    # Several names on one line attach the comment to the statement. Wrapped
+    # vertical mode is the exception: it leaves the comment on the first name.
+    single_line = f"{import_start}{', '.join(group)}{config.comment_prefix} {comment}"
+    wraps = len(single_line) > config.line_length or (
+        config.force_grid_wrap > 0 and len(group) >= config.force_grid_wrap
+    )
+    return wraps and config.multi_line_output == wrap_modes.WrapModes.VERTICAL
+
+
 def _type_ignore_split_round_trips(
     *,
     name: str,
@@ -626,29 +641,42 @@ def _type_ignore_split_round_trips(
     Once formatting moves the comment off its name, the next parse treats it as
     a comment on every import from the module and regroups them. Keep the split
     only when this name would still carry the comment.
+
+    Same-comment names are walked from the end by index so a long run does
+    not recurse.
     """
-    group = [name]
-    for later_name in following_names:
-        if nested_comments.get(later_name):
-            break
-        if _plain_name_joins_group(
-            later_name,
-            module_imports=module_imports,
-            as_imports=as_imports,
-            only_show_as_imports=only_show_as_imports,
-        ):
-            group.append(later_name)
-
-    if len(group) == 1:
-        return _singleton_type_ignore_stays_on_name(import_start, name, comment, config)
-
-    # Several names on one line attach the comment to the statement. Wrapped
-    # vertical mode is the exception: it leaves the comment on the first name.
-    single_line = f"{import_start}{', '.join(group)}{config.comment_prefix} {comment}"
-    wraps = len(single_line) > config.line_length or (
-        config.force_grid_wrap > 0 and len(group) >= config.force_grid_wrap
-    )
-    return wraps and config.multi_line_output == wrap_modes.WrapModes.VERTICAL
+    names = [name, *following_names]
+    stays_separate = [False] * len(names)
+    same_type_ignore = comment.lower().startswith("type: ignore")
+    for index in range(len(names) - 1, -1, -1):
+        if index > 0 and (not same_type_ignore or nested_comments.get(names[index]) != comment):
+            continue
+        current_comment = comment
+        group = [names[index]]
+        for later_index in range(index + 1, len(names)):
+            later_name = names[later_index]
+            later_comment = nested_comments.get(later_name)
+            if later_comment:
+                later_is_same_type_ignore = (
+                    later_comment == current_comment
+                    and later_comment.lower().startswith("type: ignore")
+                )
+                # The same type: ignore still joins this group when it would not
+                # stay separate on its own, which happens when a later
+                # uncommented name is pulled in with it.
+                if not later_is_same_type_ignore or stays_separate[later_index]:
+                    break
+            if _plain_name_joins_group(
+                later_name,
+                module_imports=module_imports,
+                as_imports=as_imports,
+                only_show_as_imports=only_show_as_imports,
+            ):
+                group.append(later_name)
+        stays_separate[index] = _type_ignore_group_stays_separate(
+            import_start, group, current_comment, config
+        )
+    return stays_separate[0]
 
 
 # Ignore DeepSource cyclomatic complexity check for this function. It was
