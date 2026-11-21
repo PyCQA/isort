@@ -161,7 +161,7 @@ def normalize_from_import_string(import_string: str) -> str:
     )
     cimports = " cimport " in import_string
     parts = import_string.split(" cimport " if cimports else " import ")
-    from_import = parts[0].split(" ")
+    from_import = parts[0].split()
     return (" cimport " if cimports else " import ").join(
         [from_import[0] + " " + "".join(from_import[1:]), *parts[1:]]
     )

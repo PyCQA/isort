@@ -812,6 +812,37 @@ Use parentheses for line continuation on length limit instead of backslashes. **
 - --up
 - --use-parentheses
 
+## Wrap Long From Imports
+
+Allow the dotted module path in a `from` import to wrap when the module and import keyword
+exceed `line_length`. Splits occur after dots, using backslashes and the configured indent.
+Wrapped lines use `wrap_length` when it is set. Individual identifiers and the leading dots
+of a relative import are kept together, so an unusually long identifier may still exceed
+the limit.
+
+This option is disabled by default. Module paths always need backslashes, even when
+`use_parentheses` or a parenthesized multi-line output mode is used for the imported names.
+The `NOQA` output mode keeps its existing behavior instead of wrapping the module path.
+Other formatters, including Black, may join these module paths again.
+
+**Type:** Bool
+
+**Default:** `False`
+
+**Config default:** `false`
+
+**Python & Config File Name:** wrap_long_from_imports
+
+**CLI Flags:**
+
+- --wrap-long-from-imports
+
+For example, with `line_length=40` and `wrap_long_from_imports=true`:
+
+```python
+from package.subpackage.component.another_component.final_module import alpha
+```
+
 ## Order By Type
 
 Order imports by type, which is determined by case, in addition to alphabetically.

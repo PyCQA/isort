@@ -307,7 +307,9 @@ def _build_import_group(
                 group_output.extend(line_comments)
             group_output.append(line)
 
-    return group_output
+    return [
+        wrap.module_path(statement, parsed.line_separator, config) for statement in group_output
+    ]
 
 
 def _build_as_imports(

@@ -12,6 +12,45 @@ def _is_wrapped(statement: str) -> bool:
     return "(" in statement.split("#", 1)[0]
 
 
+def module_path(statement: str, line_separator: str, config: Config) -> str:
+    """Optionally wrap the dotted module path of a completed from-import statement."""
+    if not config.wrap_long_from_imports or config.multi_line_output is Modes.NOQA:
+        return statement
+
+    return line_separator.join(
+        _module_path_line(line, line_separator, config) for line in statement.split(line_separator)
+    )
+
+
+def _module_path_line(content: str, line_separator: str, config: Config) -> str:
+    match = re.fullmatch(r"((?:lazy )?from )(\S+)( (?:cimport|import)\b.*)", content)
+    if match is None:
+        return content
+
+    prefix, module, suffix = match.groups()
+    keyword = suffix.split(" ", 2)[1]
+    if len(prefix + module + " " + keyword) <= config.line_length:
+        return content
+
+    line_length = config.wrap_length or config.line_length
+    lines = []
+    while len(prefix + module + suffix) > line_length:
+        # Keep the relative-import dots together and leave room for the backslash.
+        relative_dots = len(module) - len(module.lstrip("."))
+        split_at = module.rfind(".", relative_dots, max(line_length - len(prefix) - 1, 0))
+        if split_at < 0:
+            # A single component may be longer than the limit; never split an identifier.
+            split_at = module.find(".", relative_dots)
+        if split_at < 0:
+            break
+        lines.append(prefix + module[: split_at + 1] + "\\")
+        module = module[split_at + 1 :]
+        prefix = config.indent
+
+    lines.append(prefix + module + suffix)
+    return line_separator.join(lines)
+
+
 def import_statement(
     import_start: str,
     from_imports: list[str],
@@ -30,7 +69,8 @@ def import_statement(
         formatter = formatter_from_string((multi_line_output or config.multi_line_output).name)
         line_length = config.wrap_length or config.line_length
         include_trailing_comma = config.include_trailing_comma
-    dynamic_indent = " " * (len(import_start) + 1)
+    wrapped_start = module_path(import_start, line_separator, config)
+    dynamic_indent = " " * (len(wrapped_start.rsplit(line_separator, 1)[-1]) + 1)
     indent = config.indent
     statement = formatter(
         statement=import_start,

@@ -243,7 +243,14 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 # If during parsing of the continuation lines we encounter a comment, we record it.
                 if extra_line.comment is not None:
                     comments.append(extra_line.comment)
-                    stripped_line = strip_syntax(extra_line.line).strip()
+                    commented_line = extra_line.line
+                    if type_of_import is _ImportType.FROM:
+                        # A continued module path can end on this line, before
+                        # the commented imported name (including a star).
+                        commented_line = commented_line.split(" import ", 1)[-1].split(
+                            " cimport ", 1
+                        )[-1]
+                    stripped_line = strip_syntax(commented_line).strip()
                     if (
                         type_of_import is _ImportType.FROM
                         and stripped_line
