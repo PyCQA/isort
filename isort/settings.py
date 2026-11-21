@@ -173,6 +173,7 @@ class _Config:
     import_footers: dict[str, str] = field(default_factory=dict)
     balanced_wrapping: bool = False
     use_parentheses: bool = False
+    wrap_long_from_imports: bool = False
     order_by_type: bool = True
     atomic: bool = False
     lines_before_imports: int = -1

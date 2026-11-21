@@ -640,6 +640,11 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         " are too long get continued, not sections of multiple imports.",
     )
     output_group.add_argument(
+        "--wrap-long-from-imports",
+        action="store_true",
+        help="Wrap long dotted module paths in from imports using backslashes.",
+    )
+    output_group.add_argument(
         "-l",
         "-w",
         "--line-length",
