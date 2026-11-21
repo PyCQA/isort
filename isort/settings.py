@@ -166,6 +166,7 @@ class _Config:
     remove_imports: frozenset[str] = frozenset()
     append_only: bool = False
     reverse_relative: bool = False
+    absolute_imports_first: bool = False
     force_single_line: bool = False
     single_line_exclusions: tuple[str, ...] = ()
     default_section: str = THIRDPARTY

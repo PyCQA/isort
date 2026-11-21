@@ -52,11 +52,17 @@ def module_key(
         top_prefix = f"A{config.force_to_top.index(module_name):05d}_"
     else:
         top_prefix = "B"
-    return f"{top_prefix}{prefix}{_length_sort_maybe}"
+    absolute_prefix = ""
+    if config.absolute_imports_first and not sub_imports:
+        absolute_prefix = "B" if match else "A"
+    return f"{top_prefix}{absolute_prefix}{prefix}{_length_sort_maybe}"
 
 
 def section_key(line: str, config: Config) -> str:
     section = "B"
+    absolute_prefix = ""
+    if config.absolute_imports_first:
+        absolute_prefix = "B" if re.match(r"^(?:lazy )?(?:from|import|cimport) \.", line) else "A"
 
     if (
         not config.sort_relative_in_force_sorted_sections
@@ -98,7 +104,7 @@ def section_key(line: str, config: Config) -> str:
     elif not config.order_by_type:
         line = line.lower()
 
-    return f"{section}{len(line) if config.length_sort else ''}{line}"
+    return f"{section}{absolute_prefix}{len(line) if config.length_sort else ''}{line}"
 
 
 def sort(
