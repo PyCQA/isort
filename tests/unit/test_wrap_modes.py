@@ -873,3 +873,15 @@ def test_enum_matches_order_of_definitions() -> None:
     assert old_enum_logic == new_enum_logic, (
         "WrapModes enum order has changed, this is a breaking change."
     )
+
+
+def test_vertical_single_import_trailing_comma() -> None:
+    res = isort.code(
+        "from mymod import bb\n",
+        multi_line_output=1,
+        force_grid_wrap=1,
+        include_trailing_comma=True,
+        use_parentheses=True,
+        line_length=40,
+    )
+    assert res == "from mymod import (bb,)\n"

@@ -112,6 +112,18 @@ def vertical(
     if not imports:
         return ""
 
+    if not include_trailing_comma and not comments and not imports[1:]:
+        return f"{statement}({imports[0]})"
+
+    if not imports[1:]:
+        single_import = isort.comments.add_to_line(
+            comments,
+            imports[0] + ("," if include_trailing_comma else ""),
+            removed=remove_comments,
+            comment_prefix=comment_prefix,
+        )
+        return f"{statement}({single_import})"
+
     first_import = (
         isort.comments.add_to_line(
             comments,
