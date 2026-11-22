@@ -408,6 +408,19 @@ indent_style = space
     assert str(tmp_path) in loaded_settings["source"]
 
 
+@pytest.mark.parametrize(
+    "indent_lines",
+    ["indent_size = 4\n", "indent_size = tab\ntab_width = 4\n"],
+)
+def test_editorconfig_tab_indent_is_one_tab(tmp_path: Path, indent_lines: str) -> None:
+    test_config = tmp_path / ".editorconfig"
+    test_config.write_text(f"[*.py]\nindent_style = tab\n{indent_lines}", "utf8")
+    loaded_settings = settings._get_config_data(
+        str(test_config), sections=settings.CONFIG_SECTIONS[".editorconfig"]
+    )
+    assert loaded_settings["indent"] == "\t"
+
+
 def test_editorconfig_without_sections(tmp_path: Path) -> None:
     test_config = tmp_path / "test_config.editorconfig"
     test_config.write_text("\nroot = true\n", "utf8")

@@ -891,7 +891,7 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, obj
                 settings["indent"] = " " * ((indent_size and int(indent_size)) or 4)
 
             elif indent_style == "tab":
-                settings["indent"] = "\t" * ((indent_size and int(indent_size)) or 1)
+                settings["indent"] = "\t"
 
             max_line_length = str(settings.pop("max_line_length", "")).strip()
             if max_line_length and (max_line_length == "off" or max_line_length.isdigit()):
