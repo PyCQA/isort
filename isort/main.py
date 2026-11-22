@@ -598,6 +598,15 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Reverse order of relative imports.",
     )
     output_group.add_argument(
+        "--absolute-imports-first",
+        dest="absolute_imports_first",
+        action="store_true",
+        help="Sort absolute modules before relative modules within each import-style group. "
+        "With --force-sort-within-sections, apply this across import styles. "
+        "Existing grouping and explicit priorities such as --from-first, --star-first, "
+        "--top and --only-sections still apply. --reverse-sort reverses this ordering too.",
+    )
+    output_group.add_argument(
         "--reverse-sort",
         dest="reverse_sort",
         action="store_true",

@@ -11,6 +11,8 @@ on [Github](https://github.com/PyCQA/isort/releases).
 
 ### Unreleased
 
+   - Add the opt-in `absolute_imports_first` setting and `--absolute-imports-first` flag (#2146).
+
 ### 9.0.0 August 26 2026
 
    - Remove logic for deprecated options (#2498) @DanielNoord

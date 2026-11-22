@@ -709,6 +709,22 @@ Reverse order of relative imports.
 - --rr
 - --reverse-relative
 
+## Absolute Imports First
+
+Sort absolute modules before relative modules within each import-style group. With --force-sort-within-sections, apply this across import styles. Existing grouping and explicit priorities such as --from-first, --star-first, --top and --only-sections still apply. --reverse-sort reverses this ordering too.
+
+**Type:** Bool
+
+**Default:** `False`
+
+**Config default:** `false`
+
+**Python & Config File Name:** absolute_imports_first
+
+**CLI Flags:**
+
+- --absolute-imports-first
+
 ## Force Single Line
 
 Forces all from imports to appear on their own line
