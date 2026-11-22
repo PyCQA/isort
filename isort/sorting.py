@@ -7,11 +7,20 @@ _import_line_intro_re = re.compile("^(?:from|import) ")
 _import_line_midline_import_re = re.compile(" import ")
 
 
-def _absolute_import_prefix(is_relative: bool, enabled: bool) -> str:
-    """Return an optional sort prefix that places absolute imports before relative imports."""
-    if not enabled:
+def _absolute_import_prefix(is_relative: bool, config: Config, sub_imports: bool = False) -> str:
+    """Return the absolute/relative prefix, or no prefix for disabled or member sorting."""
+    if not config.absolute_imports_first or sub_imports:
         return ""
     return "B" if is_relative else "A"
+
+
+def _section_absolute_import_prefix(line: str, config: Config) -> str:
+    """Classify a formatted import line, recognizing lazy and Cython statements."""
+    if not config.absolute_imports_first:
+        return ""
+    return _absolute_import_prefix(
+        bool(re.match(r"^(?:lazy )?(?:from|import|cimport) \.", line)), config
+    )
 
 
 def module_key(
@@ -59,18 +68,13 @@ def module_key(
         top_prefix = f"A{config.force_to_top.index(module_name):05d}_"
     else:
         top_prefix = "B"
-    absolute_prefix = _absolute_import_prefix(
-        bool(match), config.absolute_imports_first and not sub_imports
-    )
+    absolute_prefix = _absolute_import_prefix(bool(match), config, sub_imports=sub_imports)
     return f"{top_prefix}{absolute_prefix}{prefix}{_length_sort_maybe}"
 
 
 def section_key(line: str, config: Config) -> str:
     section = "B"
-    relative_import = config.absolute_imports_first and bool(
-        re.match(r"^(?:lazy )?(?:from|import|cimport) \.", line)
-    )
-    absolute_prefix = _absolute_import_prefix(relative_import, config.absolute_imports_first)
+    absolute_prefix = _section_absolute_import_prefix(line, config)
 
     if (
         not config.sort_relative_in_force_sorted_sections
