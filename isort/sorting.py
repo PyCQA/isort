@@ -7,6 +7,13 @@ _import_line_intro_re = re.compile("^(?:from|import) ")
 _import_line_midline_import_re = re.compile(" import ")
 
 
+def _absolute_import_prefix(is_relative: bool, enabled: bool) -> str:
+    """Return an optional sort prefix that places absolute imports before relative imports."""
+    if not enabled:
+        return ""
+    return "B" if is_relative else "A"
+
+
 def module_key(
     module_name: str,
     config: Config,
@@ -52,17 +59,18 @@ def module_key(
         top_prefix = f"A{config.force_to_top.index(module_name):05d}_"
     else:
         top_prefix = "B"
-    absolute_prefix = ""
-    if config.absolute_imports_first and not sub_imports:
-        absolute_prefix = "B" if match else "A"
+    absolute_prefix = _absolute_import_prefix(
+        bool(match), config.absolute_imports_first and not sub_imports
+    )
     return f"{top_prefix}{absolute_prefix}{prefix}{_length_sort_maybe}"
 
 
 def section_key(line: str, config: Config) -> str:
     section = "B"
-    absolute_prefix = ""
-    if config.absolute_imports_first:
-        absolute_prefix = "B" if re.match(r"^(?:lazy )?(?:from|import|cimport) \.", line) else "A"
+    relative_import = config.absolute_imports_first and bool(
+        re.match(r"^(?:lazy )?(?:from|import|cimport) \.", line)
+    )
+    absolute_prefix = _absolute_import_prefix(relative_import, config.absolute_imports_first)
 
     if (
         not config.sort_relative_in_force_sorted_sections
