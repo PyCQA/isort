@@ -29,6 +29,35 @@ class TestConfig:
             known_third_party=["one"], known_thirdparty=["two"]
         ).known_third_party == frozenset({"one"})
 
+    def test_known_patterns_reuse_compiled_entries(self) -> None:
+        first = Config(known_first_party=["my_package*"])
+        second = Config(known_first_party=["my_package*"])
+        first_entry = first.known_patterns[0]
+        second_entry = second.known_patterns[0]
+
+        assert first.known_patterns is not second.known_patterns
+        assert first_entry is second_entry
+        assert first_entry[0].match("my_package_extra")
+        assert first_entry[1] == "FIRSTPARTY"
+
+        first.known_patterns.clear()
+        assert place_module("my_package_extra", config=second) == "FIRSTPARTY"
+        third_party = Config(known_third_party=["my_package*"])
+        assert place_module("my_package_extra", config=third_party) == "THIRDPARTY"
+
+    def test_known_patterns_refresh_directory_entries_for_new_config(self, tmp_path: Path) -> None:
+        vendor = tmp_path / "vendor"
+        vendor.mkdir()
+        (vendor / "original_package").mkdir()
+        known_packages = [f"vendor{os.sep}"]
+        first = Config(directory=str(tmp_path), known_first_party=known_packages)
+        assert place_module("original_package", config=first) == "FIRSTPARTY"
+        assert place_module("added_package", config=first) == "THIRDPARTY"
+
+        (vendor / "added_package").mkdir()
+        second = Config(directory=str(tmp_path), known_first_party=known_packages)
+        assert place_module("added_package", config=second) == "FIRSTPARTY"
+
     def test_multi_value_setting_provided_as_string(self) -> None:
         """A single string holds a separated list of items for list-like settings.
 
