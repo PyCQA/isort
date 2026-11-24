@@ -9,7 +9,7 @@ from . import _parse_utils, parse, sorting, wrap, wrap_modes
 from .comments import add_to_line as with_comments
 from .identify import STATEMENT_DECLARATIONS
 from .place import module_with_reason
-from .settings import DEFAULT_CONFIG, Config
+from .settings import DEFAULT_CONFIG, Config, format_section_comment
 
 _WRAP_CHARS_TRANSLATION = str.maketrans("", "", "(),\\")
 
@@ -92,7 +92,7 @@ def sorted_imports(
             if section_title and section_title not in seen_headings:
                 if config.dedup_headings:
                     seen_headings.add(section_title)
-                section_comment = f"# {section_title}"
+                section_comment = format_section_comment(config.comment_prefix, section_title)
                 if section_comment not in parsed.lines_without_imports[0:1]:  # pragma: no branch
                     section_output.insert(0, section_comment)
 
@@ -100,7 +100,7 @@ def sorted_imports(
             if section_footer and section_footer not in seen_headings:
                 if config.dedup_headings:
                     seen_headings.add(section_footer)
-                section_comment_end = f"# {section_footer}"
+                section_comment_end = format_section_comment(config.comment_prefix, section_footer)
                 if (
                     section_comment_end not in parsed.lines_without_imports[-1:]
                 ):  # pragma: no branch
@@ -173,11 +173,17 @@ def sorted_imports(
                     next_construct = line
                     break
 
+            # A form feed may have been hoisted in front of this line from the blank
+            # lines above it (see ``overflow_form_feeds`` below). Form feeds are
+            # whitespace that resets the indentation column, so they do not stop the
+            # line from being a statement declaration.
             if config.lines_after_imports != -1:
                 lines_after_imports = config.lines_after_imports
                 if config.profile == "black" and extension == "pyi":  # special case for black
                     lines_after_imports = 1
-            elif extension != "pyi" and next_construct.startswith(STATEMENT_DECLARATIONS):
+            elif extension != "pyi" and next_construct.lstrip("\f").startswith(
+                STATEMENT_DECLARATIONS
+            ):
                 lines_after_imports = 2
             else:
                 lines_after_imports = 1
@@ -356,7 +362,15 @@ def _build_as_imports(
             straight_comments.append(specific_comment)
 
         import_line = import_start + as_import
-        if opening_line_comments and config.use_parentheses:
+
+        if (
+            opening_line_comments
+            and config.use_parentheses
+            # NOQA mode appends a marker to lines that are too long, in front of other comments.
+            # Without skipping here this creates an infinite loop of adding markers before existing
+            # comments, which can include the marker from a previous run.
+            and config.multi_line_output is not wrap_modes.WrapModes.NOQA
+        ):
             # When parentheses are used, opening-line comments (e.g. "# noqa") must
             # remain on the "from X import (" line. If we naively embedded them in
             # the attribute string and then called wrap.line(), the comment would
@@ -381,10 +395,19 @@ def _build_as_imports(
                 removed=config.ignore_comments,
                 comment_prefix=config.comment_prefix,
             )
+            if len(lines) == 1 and len(lines[0] + opening_comment) > config.line_length:
+                # The import only fits without its comment: wrap it with room for the comment.
+                lines = wrap.line(
+                    lines[0],
+                    line_separator,
+                    Config(
+                        config=config,
+                        line_length=max(config.line_length - len(opening_comment), 0),
+                        wrap_length=max(config.wrap_length - len(opening_comment), 0),
+                    ),
+                ).split(line_separator)
             if opening_comment:
                 lines[0] += opening_comment
-                if config.multi_line_output == wrap_modes.WrapModes.NOQA:
-                    lines[0] = wrap.line(lines[0], line_separator, config)
             output.append(line_separator.join(lines))
         else:
             output.append(
@@ -791,11 +814,12 @@ def _with_from_imports_for_module(
             break
 
         # If we are combining aliased imports we need to pop any associated comments.
+        combined_as_comments: list[str] = []
         if config.combine_as_imports:
-            comments = [
-                *comments,
-                *(parsed.categorized_comments["from"].pop(f"{module}.__combined_as__", ())),
-            ]
+            combined_as_comments = parsed.categorized_comments["from"].pop(
+                f"{module}.__combined_as__", []
+            )
+            comments = [*comments, *combined_as_comments]
 
         grouped_from_import_statement = _build_grouped_from_imports(
             config=config,
@@ -805,7 +829,7 @@ def _with_from_imports_for_module(
             import_start=import_start,
             comments=comments,
             processed_as_imports_this_iteration=processed_as_imports_this_iteration,
-            preserve_comments_on_statement_line=bool(opening_line_comments),
+            preserve_comments_on_statement_line=bool(opening_line_comments or combined_as_comments),
         )
         if grouped_from_import_statement:
             output.append(grouped_from_import_statement)
@@ -948,7 +972,7 @@ def _ensure_newline_before_comment(output: list[str]) -> list[str]:
 
 def _with_star_comments(parsed: parse.ParsedContent, module: str, comments: list[str]) -> list[str]:
     star_comment = parsed.categorized_comments["nested"].get(module, {}).pop("*", None)
-    if star_comment:
+    if star_comment is not None:
         return [*comments, star_comment]
     return comments
 

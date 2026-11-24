@@ -41,6 +41,35 @@ def test_sort_file_in_place(imperfect: Path) -> None:
     assert imperfect.read_text() == fixed_content
 
 
+@pytest.mark.parametrize("line_ending", ["\n", "\r\n"])
+def test_sort_file_in_place_keeps_line_endings(tmp_path: Path, line_ending: str) -> None:
+    tmp_file = tmp_path / "test_needs_changes.py"
+    tmp_file.write_bytes(imperfect_content.replace("\n", line_ending).encode())
+    assert api.sort_file(tmp_file, overwrite_in_place=True)
+    assert tmp_file.read_bytes() == fixed_content.replace("\n", line_ending).encode()
+
+
+@pytest.mark.parametrize(
+    ("header", "encoding"), [("# coding: latin-1\n", "latin-1"), ("\ufeff", "utf-8")]
+)
+def test_sort_file_in_place_keeps_encoding(tmp_path: Path, header: str, encoding: str) -> None:
+    tmp_file = tmp_path / "test_needs_changes.py"
+    tmp_file.write_bytes(f'{header}{imperfect_content}\ns = "ã"\n'.encode(encoding))
+    assert api.sort_file(tmp_file, overwrite_in_place=True)
+    assert tmp_file.read_bytes() == f'{header}{fixed_content}\ns = "ã"\n'.encode(encoding)
+
+
+def test_sort_file_in_place_keeps_file_on_encoding_error(tmp_path: Path) -> None:
+    tmp_file = tmp_path / "test_needs_changes.py"
+    content = b"# coding: ascii\n" + imperfect_content.encode()
+    tmp_file.write_bytes(content)
+    with pytest.raises(UnicodeEncodeError):
+        api.sort_file(
+            tmp_file, overwrite_in_place=True, import_heading_thirdparty="Bibliothèques tierces"
+        )
+    assert tmp_file.read_bytes() == content
+
+
 def test_sort_file_to_stdout(capsys: pytest.CaptureFixture[str], imperfect: Path) -> None:
     assert api.sort_file(imperfect, write_to_stdout=True)
     out, _ = capsys.readouterr()
@@ -72,6 +101,15 @@ def test_check_file_with_changes(capsys: pytest.CaptureFixture[str], imperfect: 
     assert not api.check_file(imperfect, show_diff=True)
     out, _ = capsys.readouterr()
     assert fixed_diff.replace("\n", os.linesep) in out
+
+
+def test_check_file_with_non_ascii_characters(tmp_path: Path) -> None:
+    unsorted = tmp_path / "test_non_ascii.py"
+    unsorted.write_text("import b\nimport a\n\nprint('✓')\n", "utf8")
+    assert not api.check_file(unsorted)
+
+    unsorted.write_text("import a\nimport b\n\nprint('✓')\n", "utf8")
+    assert api.check_file(unsorted)
 
 
 def test_sorted_imports_multiple_configs() -> None:

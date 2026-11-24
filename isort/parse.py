@@ -14,6 +14,7 @@ from ._parse_utils import (
     normalize_from_import_string,
     normalize_line,
     skip_line,
+    split_semicolon_statements,
     strip_syntax,
 )
 from .comments import parse as parse_comments
@@ -194,13 +195,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                         starting_line = in_lines[import_index]
 
-        line, *end_of_line_comment = line.split("#", 1)
-        if ";" in line and not line[0].isspace():
-            statements = [line.strip() for line in line.split(";")]
-        else:
-            statements = [line]
-        if end_of_line_comment:
-            statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
+        statements = split_semicolon_statements(line, config)
 
         for statement in statements:
             line, raw_line = normalize_line(statement)
@@ -269,6 +264,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
             attach_comments_to: list[str] | None = None
             direct_imports = just_imports[1:]
+            # Names whose redundant alias is dropped, so they are written as plain imports.
+            unaliased_imports: list[str] = []
             straight_import = True
             top_level_module = ""
             if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
@@ -285,7 +282,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         direct_imports.remove(as_name)
                         direct_imports.remove("as")
                         if nested_module == as_name and config.remove_redundant_aliases:
-                            pass
+                            unaliased_imports.append(nested_module)
                         elif as_name not in as_map["from"][module]:  # pragma: no branch
                             as_map["from"][module].append(as_name)
 
@@ -418,6 +415,13 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     just_imports
                     and just_imports[-1]
                     and "," in import_string.split(just_imports[-1])[-1]
+                    # Aliased imports are written as separate statements unless combined, so a
+                    # statement importing only aliases must not explode the module's plain imports.
+                    and (
+                        config.combine_as_imports
+                        or any(name in direct_imports for name in just_imports)
+                        or unaliased_imports
+                    )
                 ):
                     trailing_commas.add(import_from)
             else:

@@ -1559,6 +1559,128 @@ def test_titled_and_footered_imports() -> None:
     )
 
 
+@pytest.mark.parametrize(
+    ("comment_prefix", "heading", "footer", "expected_heading", "expected_footer"),
+    [
+        (
+            "",
+            "#region Standard Library",
+            "#endregion Standard Library",
+            "#region Standard Library",
+            "#endregion Standard Library",
+        ),
+        (
+            "##",
+            "Standard Library",
+            "Standard Library End",
+            "## Standard Library",
+            "## Standard Library End",
+        ),
+        (
+            "# ",
+            "Standard Library",
+            "Standard Library End",
+            "# Standard Library",
+            "# Standard Library End",
+        ),
+        (
+            " #",
+            "Standard Library",
+            "Standard Library End",
+            "# Standard Library",
+            "# Standard Library End",
+        ),
+        (
+            "  #",
+            "Standard Library",
+            "Standard Library End",
+            "# Standard Library",
+            "# Standard Library End",
+        ),
+    ],
+)
+def test_titled_and_footered_imports_with_comment_prefix_issue_1922(
+    comment_prefix: str,
+    heading: str,
+    footer: str,
+    expected_heading: str,
+    expected_footer: str,
+) -> None:
+    """Section headings and footers should respect ``comment_prefix`` and remain idempotent."""
+    test_input = (
+        "# top comment\n"
+        "import django.settings\n"
+        "\n"
+        "import sys\n"
+        "\n"
+        "\n"
+        "def helper() -> None:\n"
+        "    import os\n"
+    )
+    first_output = isort.code(
+        code=test_input,
+        comment_prefix=comment_prefix,
+        import_heading_stdlib=heading,
+        import_footer_stdlib=footer,
+    )
+    assert first_output == (
+        "# top comment\n"
+        f"{expected_heading}\n"
+        "import sys\n"
+        "\n"
+        f"{expected_footer}\n"
+        "\n"
+        "import django.settings\n"
+        "\n"
+        "\n"
+        "def helper() -> None:\n"
+        f"    {expected_heading}\n"
+        "    import os\n"
+        "\n"
+        f"    {expected_footer}\n"
+    )
+    second_output = isort.code(
+        code=first_output,
+        comment_prefix=comment_prefix,
+        import_heading_stdlib=heading,
+        import_footer_stdlib=footer,
+    )
+    assert second_output == first_output
+    assert isort.check_code(
+        code=first_output,
+        show_diff=True,
+        comment_prefix=comment_prefix,
+        import_heading_stdlib=heading,
+        import_footer_stdlib=footer,
+    )
+
+
+def test_region_folding_comment_prefix_issue_1922() -> None:
+    """Empty ``comment_prefix`` allows region markers without adding a leading ``# ``."""
+    test_input = "import sys\nimport requests\n"
+    config = Config(
+        comment_prefix="",
+        import_heading_stdlib="#region Standard Library",
+        import_footer_stdlib="#endregion Standard Library",
+        import_heading_thirdparty="#region Third Party",
+        import_footer_thirdparty="#endregion Third Party",
+    )
+    first_output = isort.code(test_input, config=config)
+    assert first_output == (
+        "#region Standard Library\n"
+        "import sys\n"
+        "\n"
+        "#endregion Standard Library\n"
+        "\n"
+        "#region Third Party\n"
+        "import requests\n"
+        "\n"
+        "#endregion Third Party\n"
+    )
+    assert isort.code(first_output, config=config) == first_output
+    assert isort.check_code(first_output, config=config)
+
+
 def test_balanced_wrapping() -> None:
     """Tests balanced wrapping mode, where the length of individual lines maintain width."""
     test_input = (
@@ -2163,6 +2285,48 @@ def test_same_line_statements() -> None:
 
     test_input = "import pdb; pdb.set_trace()\nimport nose; nose.run()\n"
     assert isort.code(test_input) == test_input
+
+
+def test_same_line_statements_with_trailing_comments() -> None:
+    test_input = "import sys; # comment\nimport os\n"
+
+    assert [str(imp) for imp in isort.find_imports_in_code(test_input)] == [
+        ":1 import sys",
+        ":2 import os",
+    ]
+    assert isort.check_code(test_input) is False
+    assert isort.check_code("import os\nimport sys\n") is True
+    assert isort.code(test_input) == ("import os\nimport sys  # comment\n")
+
+    skipped = "import sys; # isort: skip\n"
+    assert isort.code(skipped) == skipped
+    assert isort.code("import sys; # noqa\n", honor_noqa=True) == "import sys; # noqa\n"
+    assert isort.code("import sys; # noqa\n") == "import sys  # noqa\n"
+
+
+def test_find_imports_in_code_sees_semicolon_directives() -> None:
+    """find_imports_in_code has to see skip/noqa directives after a semicolon.
+
+    Formatted output already preserved these lines; the identifier used to attach
+    the trailing comment to the empty statement after the final semicolon, so the
+    import in front of a skip/noqa directive was still reported.
+    """
+
+    assert [str(imp) for imp in isort.find_imports_in_code("import sys; # isort: skip\n")] == []
+    assert [
+        str(imp) for imp in isort.find_imports_in_code("import os; import sys  # isort: skip\n")
+    ] == []
+    assert [
+        str(imp) for imp in isort.find_imports_in_code("import sys; # noqa\n", honor_noqa=True)
+    ] == []
+    assert [str(imp) for imp in isort.find_imports_in_code("import sys; # noqa\n")] == [
+        ":1 import sys"
+    ]
+
+    # Ordinary trailing comments do not hide the import.
+    assert [str(imp) for imp in isort.find_imports_in_code("import sys; # comment\n")] == [
+        ":1 import sys"
+    ]
 
 
 def test_long_line_comments() -> None:

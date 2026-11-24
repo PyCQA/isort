@@ -14,6 +14,7 @@ from ._parse_utils import (
     normalize_from_import_string,
     normalize_line,
     skip_line,
+    split_semicolon_statements,
     strip_syntax,
 )
 from .comments import parse as parse_comments
@@ -87,16 +88,27 @@ def imports(
                 stripped_line = next_line.strip().split("#")[0]
             continue  # pragma: no cover
 
-        line, *end_of_line_comment = raw_line.split("#", 1)
-        statements = [line.strip() for line in line.split(";")]
-        if end_of_line_comment:
-            statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
+        statements = [
+            statement.strip() for statement in split_semicolon_statements(raw_line, config)
+        ]
 
         for statement in statements:
             line, _raw_line = normalize_line(statement)
             type_of_import = import_type(line, config)
             if type_of_import is None:
                 continue  # pragma: no cover
+
+            # PEP 810 lazy imports are identified by their ``lazy `` prefix.
+            # Strip it so the remaining logic parses the underlying import
+            # statement, matching the handling in ``parse.file_contents``.
+            is_lazy = type_of_import in (_ImportType.LAZY_STRAIGHT, _ImportType.LAZY_FROM)
+            if is_lazy:
+                line = line[len("lazy ") :]
+                type_of_import = (
+                    _ImportType.STRAIGHT
+                    if type_of_import is _ImportType.LAZY_STRAIGHT
+                    else _ImportType.FROM
+                )
 
             import_string, _ = parse_comments(line)
 

@@ -252,6 +252,22 @@ def test_form_feed_blank_line_not_removed_issue_2562() -> None:
     assert isort.code(test_input, lines_after_imports=2) == test_input
 
 
+@pytest.mark.parametrize(
+    "declaration", ["def f():\n    pass", "class C:\n    pass", "async def f():\n    pass"]
+)
+def test_form_feed_hidden_declaration_keeps_two_blank_lines_issue_2562(declaration: str) -> None:
+    """A form feed hoisted in front of a top level declaration must not hide it.
+
+    ``\\f`` is whitespace and resets the indentation column, so ``\\fdef f():`` is still a
+    statement declaration: it keeps ``lines_after_imports`` at 2 and the output stays
+    stable.  See: https://github.com/pycqa/isort/issues/2562
+    """
+    test_input = f"import sys\n\n\n\f\n{declaration}\n"
+    expected = f"import sys\n\n\n\f{declaration}\n"
+    assert isort.code(test_input) == expected
+    assert isort.code(expected) == expected
+
+
 def test_force_single_line_shouldnt_remove_preceding_comment_lines_issue_1296() -> None:
     """Tests to ensure force_single_line setting doesn't result in lost comments.
     See: https://github.com/pycqa/isort/issues/1296
@@ -954,10 +970,6 @@ def bar():
             """
 
 
-
-
-
-
 def foo():
     pass
 
@@ -1229,7 +1241,6 @@ def generator_function():
     ((
     (((
      yield
-
 
 
      from other_function()[1]
@@ -2173,6 +2184,41 @@ attr as alias  # type: ignore[attr-defined]
     )
 
 
+def test_comment_on_opening_line_of_aliased_import_does_not_move_with_combine_as_imports() -> None:
+    """The comment of a wrapped aliased import stays on the "from ... import (" line
+    with combine_as_imports as well.
+    """
+    test_input = """\
+from a_long_name_to_enforce.splitting_across.two_lines import (  # type: ignore[attr-defined]
+    a_random_attribute as renamed_random_attribute,
+)
+"""
+    assert isort.code(test_input, profile="black", combine_as_imports=True) == test_input
+
+    single_line_input = (
+        "from a_long_name_to_enforce.splitting_across.two_lines import "
+        "a_random_attribute as renamed_random_attribute  # type: ignore[attr-defined]\n"
+    )
+    assert isort.code(single_line_input, profile="black", combine_as_imports=True) == test_input
+
+    # Without the black profile the import is not exploded.
+    test_input_no_trailing_comma = """\
+from a_long_name_to_enforce.splitting_across.two_lines import (  # type: ignore[attr-defined]
+    a_random_attribute as renamed_random_attribute
+)
+"""
+    assert (
+        isort.code(
+            test_input_no_trailing_comma,
+            use_parentheses=True,
+            multi_line_output=3,
+            line_length=88,
+            combine_as_imports=True,
+        )
+        == test_input_no_trailing_comma
+    )
+
+
 def test_sort_reexports_with_stdin_raises_error_issue_2393() -> None:
     """Ensure --sort-reexports raises a clear error when used with stdin."""
     fake_stdin = TextIOWrapper(BytesIO(b"from test import B, A\n"))
@@ -2654,21 +2700,22 @@ def test_noqa_added_to_long_as_import_with_opening_line_comment_issue_2093() -> 
     """A long ``as`` import with an opening-line comment and ``use_parentheses``.
 
     When ``use_parentheses`` is enabled and the import carries an opening-line
-    comment, the comment is attached to the first line after wrapping. In NOQA
-    mode ``wrap.line()`` is re-run on that line so ``# NOQA`` is added when it
-    still exceeds the line length. In non-NOQA modes the comment is preserved on
-    the ``from X import (`` line without ``# NOQA``.
+    comment, the comment is attached to the first line after wrapping. NOQA mode
+    never wraps in parentheses, so the comment is merged into the statement before
+    it is wrapped and ``# NOQA`` is added after it when the line is still too long.
+    In non-NOQA modes the comment is preserved on the ``from X import (`` line
+    without ``# NOQA``.
     """
     to_sort = (
         "from my_package.my_module import super_long_file_name as super_long_alias"
         "  # type: ignore\n"
     )
 
-    # NOQA mode: # NOQA is appended after the opening-line comment.
+    # NOQA mode: the opening-line comment comes first, # NOQA is appended after it.
     first_pass = isort.code(to_sort, multi_line_output=7, use_parentheses=True, line_length=40)
     assert first_pass == (
         "from my_package.my_module import super_long_file_name as super_long_alias"
-        "  # NOQA  # type: ignore\n"
+        "  # type: ignore  # NOQA\n"
     )
 
     # Non-NOQA mode (grid): the comment stays on the opening parenthesis line.
@@ -2688,6 +2735,59 @@ def test_noqa_added_to_long_as_import_with_opening_line_comment_issue_2093() -> 
     )
     assert ignored_pass == (
         "from my_package.my_module import super_long_file_name as super_long_alias  # NOQA\n"
+    )
+
+
+def test_noqa_mode_reaches_a_fixpoint_with_an_opening_line_comment() -> None:
+    """NOQA mode must not add another ``# NOQA`` marker on every pass.
+
+    The line was wrapped once by ``wrap.line()`` and once more after the
+    opening-line comment moved onto the first line, so every run added a
+    marker and the output never reached a fixpoint.
+    """
+    to_sort = (
+        "from my_package.my_module import super_long_file_name as super_long_alias"
+        "  # type: ignore\n"
+    )
+
+    first_pass = isort.code(to_sort, multi_line_output=7, use_parentheses=True, line_length=40)
+    assert first_pass.count("# NOQA") == 1
+
+    second_pass = isort.code(first_pass, multi_line_output=7, use_parentheses=True, line_length=40)
+    assert second_pass == first_pass
+    assert second_pass.count("# NOQA") == 1
+
+
+def test_non_noqa_mode_wraps_with_an_ignored_opening_line_comment_issue_2093() -> None:
+    """A non-NOQA wrap mode keeps the parentheses clean of an ignored comment.
+
+    With ``use_parentheses`` and an opening-line comment the statement is wrapped
+    first and the comment is added to the ``from X import (`` line afterwards.
+    When ``ignore_comments`` strips that comment there is nothing to add, so the
+    first line must stay untouched. NOQA mode no longer takes this path, because
+    it never parenthesises the statement.
+    """
+    to_sort = (
+        "from my_package.my_module import super_long_file_name as super_long_alias"
+        "  # type: ignore\n"
+    )
+
+    first_pass = isort.code(
+        to_sort,
+        multi_line_output=0,
+        use_parentheses=True,
+        ignore_comments=True,
+        line_length=40,
+    )
+    assert first_pass == (
+        "from my_package.my_module import (\n    super_long_file_name as super_long_alias)\n"
+    )
+    assert first_pass == isort.code(
+        first_pass,
+        multi_line_output=0,
+        use_parentheses=True,
+        ignore_comments=True,
+        line_length=40,
     )
 
 
@@ -3131,3 +3231,103 @@ def test_comment_kept_on_the_wrapped_alias_it_was_written_on() -> None:
         == expected_output
     )
     assert isort.code(expected_output) == expected_output
+
+
+def test_a_bare_hash_survives_a_wrapped_import_line() -> None:
+    """An empty comment was treated as no comment, so the '#' was dropped."""
+    code = "from sys import super_long_name  #\n"
+    expected = "from sys import \\\n    super_long_name  #\n"
+    assert isort.code(code, force_grid_wrap=3, line_length=30) == expected
+    assert isort.code(expected, force_grid_wrap=3, line_length=30) == expected
+
+
+def test_a_bare_hash_survives_on_a_star_import() -> None:
+    """The same empty-comment check dropped the '#' from star imports."""
+    assert isort.code("from sys import *  #\n") == "from sys import *  #\n"
+    expected = "from some.really.long.module.name import \\\n    *  #\n"
+    assert isort.code("from some.really.long.module.name import *  #\n", line_length=30) == expected
+
+
+@pytest.mark.parametrize("use_parentheses", [False, True])
+def test_grid_wrap_with_trailing_comma_keeps_a_dotted_from_import_valid(
+    use_parentheses: bool,
+) -> None:
+    """``force_grid_wrap`` and ``include_trailing_comma`` must not produce invalid Python.
+
+    The grid formatter does not account for the trailing comma it appends, so a statement
+    whose grid form is one character over the line length was handed back to the generic
+    wrapper, which parenthesised the rest of the statement behind the dot of the module
+    path: ``from mymodule.sub import (long_name, y2,)`` became
+    ``from mymodule.(\\n    sub import (long_name, y2,),)``, a syntax error.
+    """
+    to_sort = "from mymodule.sub import y2, long_name\n"
+    expected = "from mymodule.sub import (\n    long_name, y2,)\n"
+
+    result = isort.code(
+        to_sort,
+        force_grid_wrap=2,
+        include_trailing_comma=True,
+        use_parentheses=use_parentheses,
+        line_length=40,
+    )
+
+    assert ast.parse(result)
+    assert result == expected
+    assert (
+        isort.code(
+            result,
+            force_grid_wrap=2,
+            include_trailing_comma=True,
+            use_parentheses=use_parentheses,
+            line_length=40,
+        )
+        == result
+    )
+
+
+def test_aliased_import_with_an_opening_line_comment_stays_within_line_length_issue_2775() -> None:
+    """The opening-line comment was added after wrapping and pushed the import past line_length."""
+    expected = (
+        "from some.package.with_a_rather_long_module_name import (  # noqa: N813\n"
+        "    SomeLongClassName as alias,\n"
+        ")\n"
+    )
+    assert isort.code(expected, profile="black") == expected
+    # black's output for the long single line
+    black_output = (
+        "from some.package.with_a_rather_long_module_name import (\n"
+        "    SomeLongClassName as alias,\n"
+        ")  # noqa: N813\n"
+    )
+    assert isort.code(black_output, profile="black") == expected
+    # also with a type: ignore comment
+    expected = expected.replace("# noqa: N813", "# type: ignore[attr-defined]")
+    assert isort.code(expected, profile="black") == expected
+
+
+def test_trailing_comma_on_aliased_only_import_does_not_explode_plain_imports_issue_2793() -> None:
+    """A trailing comma recorded on an alias-only statement exploded the module's plain imports.
+
+    The aliased import is written as its own statement, so its trailing comma (added by isort
+    itself when wrapping) must not force ``from requests import Z`` onto multiple lines.
+    """
+    first_pass = isort.code(
+        "from requests import long_name_here as long_name_here2, Z\n",
+        profile="black",
+        line_length=40,
+    )
+    assert first_pass == (
+        "from requests import Z\n"
+        "from requests import (\n"
+        "    long_name_here as long_name_here2,\n"
+        ")\n"
+    )
+    assert isort.code(first_pass, profile="black", line_length=40) == first_pass
+    # A trailing comma on a statement that does import the plain name still splits it.
+    assert isort.code("from requests import (a as b, Z,)\n", profile="black") == (
+        "from requests import (\n    Z,\n)\nfrom requests import a as b\n"
+    )
+    # So does a trailing comma on a redundant alias that is written as a plain import.
+    assert isort.code(
+        "from requests import (Z as Z,)\n", profile="black", remove_redundant_aliases=True
+    ) == ("from requests import (\n    Z,\n)\n")
