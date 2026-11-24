@@ -472,6 +472,18 @@ def _build_grouped_from_imports(
 
     has_noqa_comment = any(comment.lower().startswith("noqa") for comment in comments if comment)
 
+    # A later single-name noqa must stay on the same line as its import.
+    # Wrapping can hoist it to the module's first statement on the next run.
+    if (
+        has_noqa_comment
+        and len(imports) == 1
+        and not first_statement
+        and not preserve_comments_on_statement_line
+        and not config.ignore_comments
+        and config.multi_line_output is not wrap_modes.WrapModes.NOQA
+    ):
+        return import_statement
+
     if (
         # When ``include_trailing_comma`` is enabled isort always appends a
         # trailing comma to multi-line imports.  Combined with

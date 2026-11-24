@@ -3370,6 +3370,16 @@ def test_commented_from_imports_are_stable_across_runs(source: str, config: isor
         ),
         (
             "from x import a  # explanation\nfrom x import an_extremely_long_name  # noqa: F401\n",
+            "from x import a  # explanation\nfrom x import an_extremely_long_name  # noqa: F401\n",
+            isort.Config(profile="black", line_length=40),
+        ),
+        (
+            "from x import a  # explanation\nfrom x import an_extremely_long_name  # noqa: F401\n",
+            "from x import a  # explanation\nfrom x import an_extremely_long_name  # noqa: F401\n",
+            isort.Config(use_parentheses=True, line_length=40),
+        ),
+        (
+            "from x import a  # explanation\nfrom x import an_extremely_long_name  # noqa: F401\n",
             "from x import a  # explanation\n"
             "from x import an_extremely_long_name  # NOQA noqa: F401\n",
             isort.Config(
