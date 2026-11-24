@@ -553,3 +553,13 @@ def test_section_comments_respect_comment_prefix() -> None:
     )
     assert prefixed.section_comments == ("## Standard Library",)
     assert prefixed.section_comments_end == ("## Standard Library End",)
+
+
+def test_known_patterns_compiled_regex_cached_across_configs() -> None:
+    cfg1 = settings.Config(profile="black")
+    cfg2 = settings.Config(profile="black")
+    patterns1 = {p.pattern: p for p, _ in cfg1.known_patterns}
+    patterns2 = {p.pattern: p for p, _ in cfg2.known_patterns}
+    assert patterns1
+    for pat_str, pat_obj in patterns1.items():
+        assert pat_obj is patterns2[pat_str]
