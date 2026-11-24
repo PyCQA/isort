@@ -1074,7 +1074,10 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
         # relative to the resolved config directory.
         config_dict["src_paths"] = set(config_dict.get("src_paths", ()))
 
-    config = Config(**config_dict)
+    try:
+        config = Config(**config_dict)
+    except ISortError as error:
+        sys.exit(f"Error: {error}")
     if show_config:
         print(json.dumps(asdict(config), indent=4, separators=(",", ": "), default=_preconvert))
         return

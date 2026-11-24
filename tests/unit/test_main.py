@@ -13,7 +13,6 @@ from hypothesis import strategies as st
 
 from isort import main
 from isort._version import _VERSION_STRING, _IS_COMPILED
-from isort.exceptions import InvalidSettingsPath
 from isort.settings import DEFAULT_CONFIG, Config
 from isort.wrap_modes import WrapModes
 from .utils import as_stream
@@ -197,6 +196,37 @@ sections=MADEUP
         main.main([str(python_file)])
 
 
+def test_invalid_settings_path(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
+    """A missing settings path is a user error, not a traceback."""
+    python_file = tmp_path / "file.py"
+    python_file.write_text("import os\n")
+
+    with pytest.raises(SystemExit) as error:
+        main.main([str(python_file), f"--settings-path={tmp_path / 'missing'}"])
+
+    # sys.exit() with a message: the interpreter prints it to stderr and exits 1
+    assert str(error.value.code).startswith("Error: isort was told to use the settings_path")
+    out, err = capsys.readouterr()
+    assert not out
+    assert not err
+
+
+def test_unknown_profile(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
+    """An unknown profile is a user error, not a traceback."""
+    python_file = tmp_path / "file.py"
+    python_file.write_text("import os\n")
+
+    with pytest.raises(SystemExit) as error:
+        main.main([str(python_file), "--profile=does_not_exist"])
+
+    assert str(error.value.code).startswith(
+        "Error: Specified profile of does_not_exist does not exist."
+    )
+    out, err = capsys.readouterr()
+    assert not out
+    assert not err
+
+
 def test_ran_against_root() -> None:
     with pytest.raises(SystemExit):
         main.main(["/"])
@@ -249,7 +279,7 @@ def test_main(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
     assert json.loads(out)["virtual_env"] == str(tmp_path)
 
     # This should raise an error if an invalid settings path is provided
-    with pytest.raises(InvalidSettingsPath):
+    with pytest.raises(SystemExit) as error:
         main.main(
             [
                 *base_args[2:],
@@ -258,6 +288,7 @@ def test_main(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
                 "/random-root-folder-that-cant-exist-right?",
             ]
         )
+    assert str(error.value.code).startswith("Error: isort was told to use the settings_path")
 
     # Should be able to set settings path to a file
     config_file = tmp_path / ".isort.cfg"
