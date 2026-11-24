@@ -83,3 +83,21 @@ def test_src_path_name_matching_thirdparty_not_firstparty(tmp_path: Path) -> Non
     config_2247 = Config(src_paths=[app_fastapi, tmp_path])
     assert place.module("same_dir_module", config=config_2247) == sections.FIRSTPARTY
     assert place.module("fastapi", config=config_2247) == sections.THIRDPARTY
+
+
+def test_src_path_namespace_package_root_placement(tmp_path: Path) -> None:
+    # When src_paths points directly at an implicit namespace package root,
+    # both the bare namespace package name and its submodules should resolve as FIRSTPARTY.
+    nspkg = tmp_path / "nspkg"
+    sub = nspkg / "sub"
+    sub.mkdir(parents=True)
+    (sub / "__init__.py").touch()
+
+    config = Config(src_paths=[nspkg], auto_identify_namespace_packages=True)
+    assert place.module("nspkg.sub", config=config) == sections.FIRSTPARTY
+    assert place.module("nspkg", config=config) == sections.FIRSTPARTY
+
+    config_explicit = Config(src_paths=[nspkg], namespace_packages=["nspkg"])
+    assert place.module("nspkg.sub", config=config_explicit) == sections.FIRSTPARTY
+    assert place.module("nspkg", config=config_explicit) == sections.FIRSTPARTY
+

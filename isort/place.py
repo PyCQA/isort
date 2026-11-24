@@ -76,11 +76,19 @@ def _src_path(
 
     for src_path in src_paths:
         module_path = (src_path / root_module_name).resolve()
+        is_src_path_module = (
+            _is_module(src_path)
+            or root_module_name in config.namespace_packages
+            or (
+                config.auto_identify_namespace_packages
+                and _is_namespace_package(src_path, config.supported_extensions)
+            )
+        )
         if (
             not prefix
             and not module_path.is_dir()
             and src_path.name == root_module_name
-            and (nested_module or _is_module(src_path))
+            and (nested_module or is_src_path_module)
         ):
             module_path = src_path.resolve()
         if nested_module and (
@@ -94,7 +102,7 @@ def _src_path(
         if (
             _is_module(module_path)
             or _is_package(module_path)
-            or _src_path_is_module(src_path, root_module_name)
+            or _src_path_is_module(src_path, root_module_name, config)
         ):
             return (sections.FIRSTPARTY, f"Found in one of the configured src_paths: {src_path}.")
 
@@ -145,9 +153,17 @@ def _is_namespace_package(path: Path, src_extensions: frozenset[str]) -> bool:
     return True
 
 
-def _src_path_is_module(src_path: Path, module_name: str) -> bool:
-    return (
-        module_name == src_path.name
-        and _is_module(src_path)
-        and exists_case_sensitive(str(src_path))
-    )
+def _src_path_is_module(src_path: Path, module_name: str, config: Config | None = None) -> bool:
+    if module_name != src_path.name or not exists_case_sensitive(str(src_path)):
+        return False
+    if _is_module(src_path):
+        return True
+    if config and (
+        module_name in config.namespace_packages
+        or (
+            config.auto_identify_namespace_packages
+            and _is_namespace_package(src_path, config.supported_extensions)
+        )
+    ):
+        return True
+    return False
