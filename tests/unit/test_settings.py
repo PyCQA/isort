@@ -415,6 +415,52 @@ def test_editorconfig_without_sections(tmp_path: Path) -> None:
     assert not loaded_settings
 
 
+def test_editorconfig_max_line_length_off(tmp_path: Path) -> None:
+    """`max_line_length = off` is a supported .editorconfig setting and must map to
+    an infinite line length instead of raising OverflowError when coerced to int.
+    See: https://github.com/PyCQA/isort/issues/2815
+    """
+    test_config = tmp_path / ".editorconfig"
+    test_config.write_text(
+        """
+root = true
+
+[*.py]
+indent_style = space
+max_line_length = off
+""",
+        "utf8",
+    )
+    loaded_settings = settings._get_config_data(
+        str(test_config), sections=settings.CONFIG_SECTIONS[".editorconfig"]
+    )
+    assert loaded_settings["line_length"] == float("inf")
+
+    config = Config(settings_path=str(tmp_path))
+    assert config.line_length == float("inf")
+    # The whole file must not be discarded, so other settings still apply
+    assert config.indent == "    "
+
+    # An import that would otherwise wrap stays on a single line
+    assert (
+        code(
+            "from xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx import aaaa, bbbb, cccc\n",
+            config=config,
+        )
+        == "from xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx import aaaa, bbbb, cccc\n"
+    )
+
+
+def test_line_length_accepts_infinity() -> None:
+    """The runtime/API path must not crash on a non-integral float line_length."""
+    config = Config(line_length=float("inf"))
+    assert config.line_length == float("inf")
+    assert (
+        code("from xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx import aaa, bbb, ccc\n", config=config)
+        == "from xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx import aaa, bbb, ccc\n"
+    )
+
+
 def test_get_config_data_with_toml_and_utf8(tmp_path: Path) -> None:
     test_config = tmp_path / "pyproject.toml"
     # Exception: UnicodeDecodeError: 'gbk' codec can't decode byte 0x84 in position 57

@@ -430,6 +430,17 @@ class Config(_Config):
 
             if key == "force_to_top":
                 combined_config[key] = _normalize_force_to_top(value)
+            elif (
+                isinstance(default_value, int)
+                and not isinstance(default_value, bool)
+                and isinstance(value, float)
+                and not value.is_integer()
+            ):
+                # Settings such as `line_length` can legitimately be set to a
+                # non-integral float (for example, the float("inf") used to
+                # represent `max_line_length = off` in .editorconfig files).
+                # Keep those values instead of overflowing when coercing to int.
+                combined_config[key] = value
             else:
                 combined_config[key] = type(default_value)(value)
 
@@ -925,6 +936,11 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, obj
                 settings[key] = result
             elif key == "comment_prefix":
                 settings[key] = str(value).strip("'").strip('"')
+            elif existing_value_type is int and isinstance(value, float) and not value.is_integer():
+                # Keep non-integral float values (such as the float("inf") used
+                # for .editorconfig's `max_line_length = off`) as-is instead of
+                # raising OverflowError when coercing to int.
+                settings[key] = value
             else:
                 settings[key] = existing_value_type(value)
 
