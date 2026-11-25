@@ -970,10 +970,6 @@ def bar():
             """
 
 
-
-
-
-
 def foo():
     pass
 
@@ -1245,7 +1241,6 @@ def generator_function():
     ((
     (((
      yield
-
 
 
      from other_function()[1]
@@ -3176,6 +3171,66 @@ def test_isort_assignments_in_an_indented_block_keeps_its_indentation() -> None:
     """The sorted assignments were indented a second time, which broke the code."""
     test_input = "class C:\n    # isort: assignments\n    b = 1\n    a = 2\n"
     assert isort.code(test_input) == "class C:\n    # isort: assignments\n    a = 2\n    b = 1\n"
+
+
+def test_comment_kept_on_wrapped_import_aliased_to_its_own_name() -> None:
+    """The comment of an `X as X` import was dropped when the alias was on a line of
+    its own. isort itself wraps a long `X as X` import with a comment that way, so a
+    second run removed the comment and `--check` failed on isort's own output.
+    """
+    test_input = (
+        "from mypackage.config import ConfigurationManager as ConfigurationManager"
+        "  # pylint: disable=useless-import-alias\n"
+    )
+    expected_output = (
+        "from mypackage.config import \\\n"
+        "    ConfigurationManager as \\\n"
+        "    ConfigurationManager  # pylint: disable=useless-import-alias\n"
+    )
+    assert isort.code(test_input) == expected_output
+    assert isort.code(expected_output) == expected_output
+
+    expected_output = "from a import b as b  # comment\n"
+    assert isort.code("from a import b as \\\n    b  # comment\n") == expected_output
+    assert isort.code("from a import (b as\n    b)  # comment\n") == expected_output
+    assert (
+        isort.code("from a import b as \\\n    b  # comment\n", remove_redundant_aliases=True)
+        == "from a import b  # comment\n"
+    )
+
+
+def test_comment_kept_on_the_wrapped_alias_it_was_written_on() -> None:
+    """With several `X as X` imports in one statement, the comment of a wrapped alias
+    must stay on that alias instead of moving to the first one.
+    """
+    expected_output = (
+        "from pkg import a as a\nfrom pkg import b as b  # type: ignore[attr-defined]\n"
+    )
+    assert (
+        isort.code("from pkg import (a as a, b as\n    b)  # type: ignore[attr-defined]\n")
+        == expected_output
+    )
+    assert (
+        isort.code("from pkg import a as a, b as \\\n    b  # type: ignore[attr-defined]\n")
+        == expected_output
+    )
+    assert isort.code(expected_output) == expected_output
+
+    expected_output = (
+        "from pkg import a as a  # type: ignore[attr-defined]\nfrom pkg import b as b\n"
+    )
+    assert (
+        isort.code("from pkg import (a as\n    a,  # type: ignore[attr-defined]\n    b as b)\n")
+        == expected_output
+    )
+    assert isort.code(expected_output) == expected_output
+
+    expected_output = "from pkg import a as a  # first\nfrom pkg import b as b  # second\n"
+    assert (
+        isort.code("from pkg import (a as\n    a,  # first\n    b as\n    b)  # second\n")
+        == expected_output
+    )
+    assert isort.code(expected_output) == expected_output
 
 
 def test_a_bare_hash_survives_a_wrapped_import_line() -> None:
