@@ -138,3 +138,22 @@ def test_force_sort_within_sections_applies_to_lazy() -> None:
         "lazy from ast import parse\nlazy import zlib\n",
         force_sort_within_sections=True,
     )
+
+
+def test_force_sort_within_sections_sorts_lazy_by_module_name() -> None:
+    """force_sort_within_sections orders lazy imports by module name like eager imports.
+
+    The ``ast``/``zlib`` pair in the test above sorts identically both by module
+    name and with all ``from`` imports first, so it cannot detect the
+    mis-ordering; a straight import that sorts before a ``from`` import can.
+    """
+    isort_test(
+        "lazy import aa\nlazy from zz import x\n",
+        "lazy import aa\nlazy from zz import x\n",
+        force_sort_within_sections=True,
+    )
+    isort_test(
+        "lazy import z\nlazy from m import a\nlazy import a.b\nlazy from n import q as r\n",
+        "lazy import a.b\nlazy from m import a\nlazy from n import q as r\nlazy import z\n",
+        force_sort_within_sections=True,
+    )
