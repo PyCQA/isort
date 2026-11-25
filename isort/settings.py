@@ -13,6 +13,7 @@ import sys
 import tomllib
 from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass, field
+from functools import lru_cache
 from importlib.metadata import EntryPoints
 from pathlib import Path
 from re import Pattern
@@ -636,7 +637,7 @@ class Config(_Config):
         if self._known_patterns is not None:
             return self._known_patterns
 
-        self._known_patterns = []
+        compiled_patterns: list[tuple[Pattern[str], str]] = []
         pattern_sections = [STDLIB] + [section for section in self.sections if section != STDLIB]
         for placement in reversed(pattern_sections):
             known_placement = KNOWN_SECTION_MAPPING.get(placement, placement).lower()
@@ -644,16 +645,15 @@ class Config(_Config):
             known_modules = getattr(self, config_key, self.known_other.get(known_placement, ()))
             extra_modules = getattr(self, f"extra_{known_placement}", ())
             all_modules = set(extra_modules).union(known_modules)
-            known_patterns = [
+            expanded_patterns = tuple(
                 pattern
                 for known_pattern in all_modules
                 for pattern in self._parse_known_pattern(known_pattern)
-            ]
-            for known_pattern in known_patterns:
-                regexp = "^" + known_pattern.replace("*", ".*").replace("?", ".?") + "$"
-                self._known_patterns.append((re.compile(regexp), placement))
+            )
+            compiled_patterns.extend(_compile_known_patterns(expanded_patterns, placement))
 
-        return self._known_patterns
+        self._known_patterns = compiled_patterns
+        return compiled_patterns
 
     @property
     def section_comments(self) -> tuple[str, ...]:
@@ -743,6 +743,16 @@ class Config(_Config):
             patterns = [pattern]
 
         return patterns
+
+
+@lru_cache(maxsize=128)
+def _compile_known_patterns(
+    patterns: tuple[str, ...], placement: str
+) -> tuple[tuple[Pattern[str], str], ...]:
+    return tuple(
+        (re.compile("^" + pattern.replace("*", ".*").replace("?", ".?") + "$"), placement)
+        for pattern in patterns
+    )
 
 
 def _get_str_to_type_converter(setting_name: str) -> Callable[[object], object]:
