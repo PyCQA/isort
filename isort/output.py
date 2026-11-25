@@ -232,6 +232,13 @@ def _build_import_group(
     """Build the sorted import lines for one group (eager or lazy) within a section."""
     straight_key: Literal["lazy_straight", "straight"] = "lazy_straight" if is_lazy else "straight"
     from_key: Literal["lazy_from", "from"] = "lazy_from" if is_lazy else "from"
+    if is_lazy:
+        # Lazy imports are written with their own aliases, comments and trailing commas.
+        parsed = parsed._replace(
+            as_map=parsed.lazy_as_map,
+            categorized_comments=parsed.lazy_categorized_comments,
+            trailing_commas=parsed.lazy_trailing_commas,
+        )
 
     straight_modules: Iterable[str] = parsed.imports[section][straight_key]
     if not config.only_sections:
