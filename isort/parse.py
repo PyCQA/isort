@@ -238,6 +238,13 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             line, import_string, extra_lines = collect_import_continuation(
                 line, import_string, _get_next_line, line_separator
             )
+            if any(
+                extra_line.comment and "isort: split" in extra_line.comment
+                for extra_line in extra_lines
+            ):
+                out_lines.append(raw_line)
+                out_lines.extend(in_lines[statement_index:index])
+                continue
             for extra_line in extra_lines:
                 raw_lines.append(extra_line.line)
                 # If during parsing of the continuation lines we encounter a comment, we record it.
