@@ -3276,3 +3276,131 @@ def test_trailing_comma_on_aliased_only_import_does_not_explode_plain_imports_is
     assert isort.code(
         "from requests import (Z as Z,)\n", profile="black", remove_redundant_aliases=True
     ) == ("from requests import (\n    Z,\n)\n")
+
+
+def _from_import_bindings(code: str) -> dict[str, str]:
+    """What each name refers to once the `from` imports in ``code`` have run."""
+    return {
+        alias.asname or alias.name: f"{node.module}.{alias.name}"
+        for node in ast.parse(code).body
+        if isinstance(node, ast.ImportFrom)
+        for alias in node.names
+    }
+
+
+@pytest.mark.parametrize(
+    ("source", "config"),
+    [
+        (
+            "from x import a\nfrom x import b  # type: ignore[attr-defined]\n"
+            "from x import c  # type: ignore[attr-defined]\nfrom x import d\n",
+            isort.Config(),
+        ),
+        (
+            "from x import a  # noqa: F401\nfrom x import b  # explanation\n"
+            "from x import c\nfrom x import d  # noqa: F401\n",
+            isort.Config(),
+        ),
+        (
+            "from x import (\n    a,  # explanation\n    b,\n    c,  # noqa: F401\n    d,\n)\n",
+            isort.Config(profile="black"),
+        ),
+        (
+            "from x import a  # type: ignore\nfrom x import b\n"
+            "from x import c  # type: ignore\nfrom x import d\n",
+            isort.Config(profile="black", line_length=32),
+        ),
+        (
+            "from x import a  # explanation\nfrom x import a as c\n"
+            "from x import b  # type: ignore\nfrom x import c\n",
+            isort.Config(),
+        ),
+        (
+            "from x import a  # explanation\nfrom x import b  # type: ignore\n"
+            "from x import c as b\n",
+            isort.Config(combine_as_imports=True),
+        ),
+        (
+            "from x import (  # explanation\n    a as aa,\n    b as bb,  # noqa: F401\n)\n",
+            isort.Config(combine_as_imports=True),
+        ),
+        (
+            "from x import a\nfrom x import b  # type: ignore\nfrom x import c  # noqa: F401\n",
+            isort.Config(no_inline_sort=True, force_sort_within_sections=True, length_sort=True),
+        ),
+        (
+            "from x import a  # one\nfrom x import b as bb\n"
+            "from x import c  # two\nfrom x import a as aa\n",
+            isort.Config(ignore_comments=True, no_inline_sort=True),
+        ),
+        (
+            "from x import (  # pylint: disable=unused-import\n"
+            "    a,  # type: ignore[attr-defined]\n"
+            "    b,  # type: ignore[attr-defined]\n"
+            "    c,  # explanation\n"
+            ")\n",
+            isort.Config(),
+        ),
+        (
+            "from x import getX as bb\nfrom x import get_x as bb  # pylint: disable=x\n",
+            isort.Config(profile="open_stack"),
+        ),
+    ],
+)
+def test_commented_from_imports_are_stable_across_runs(source: str, config: isort.Config) -> None:
+    """When the comments on the names of a `from` import could not share one statement, later
+    statements for the module could group names under a comment on their opening line, which the
+    next run attached to the first statement for the module. Sorting must give the same result
+    the second time and keep what every name refers to.
+    """
+    result = isort.code(source, config=config)
+    assert isort.code(result, config=config) == result
+    assert _from_import_bindings(result) == _from_import_bindings(source)
+
+
+@pytest.mark.parametrize(
+    ("source", "expected", "config"),
+    [
+        (
+            "from os.path import basename  # used below\nfrom os.path import dirname\n"
+            "from os.path import exists  # noqa: F401\nfrom os.path import join\n",
+            "from os.path import basename, dirname, join  # used below\n"
+            "from os.path import exists  # noqa: F401\n",
+            isort.Config(),
+        ),
+        (
+            "from x import a  # explanation\nfrom x import an_extremely_long_name  # noqa: F401\n",
+            "from x import a  # explanation\nfrom x import an_extremely_long_name  # noqa: F401\n",
+            isort.Config(profile="black", line_length=40),
+        ),
+        (
+            "from x import a  # explanation\nfrom x import an_extremely_long_name  # noqa: F401\n",
+            "from x import a  # explanation\nfrom x import an_extremely_long_name  # noqa: F401\n",
+            isort.Config(use_parentheses=True, line_length=40),
+        ),
+        (
+            "from x import a  # explanation\nfrom x import an_extremely_long_name  # noqa: F401\n",
+            "from x import a  # explanation\n"
+            "from x import an_extremely_long_name  # NOQA noqa: F401\n",
+            isort.Config(
+                multi_line_output=WrapModes.NOQA,
+                line_length=40,
+                include_trailing_comma=True,
+                split_on_trailing_comma=True,
+            ),
+        ),
+        (
+            "from x import a, b  # explanation\n"
+            "from x import an_extremely_long_name  # type: ignore[attr-defined]\n",
+            "from x import a, b  # explanation\n"
+            "from x import an_extremely_long_name  # type: ignore[attr-defined]  # NOQA\n",
+            isort.Config(multi_line_output=WrapModes.NOQA, line_length=40),
+        ),
+    ],
+)
+def test_later_commented_from_import_keeps_its_comment(
+    source: str, expected: str, config: isort.Config
+) -> None:
+    """A later statement for a module holds a single commented name and keeps the comment on it."""
+    assert isort.code(source, config=config) == expected
+    assert isort.code(expected, config=config) == expected

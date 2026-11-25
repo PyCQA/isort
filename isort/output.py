@@ -437,6 +437,7 @@ def _build_grouped_from_imports(
     parsed: parse.ParsedContent,
     config: Config,
     preserve_comments_on_statement_line: bool,
+    first_statement: bool,
 ) -> str:
     """
     Build a string of imports, wrapping them across multiple lines if necessary.
@@ -471,6 +472,18 @@ def _build_grouped_from_imports(
 
     has_noqa_comment = any(comment.lower().startswith("noqa") for comment in comments if comment)
 
+    # A later single-name noqa must stay on the same line as its import.
+    # Wrapping can hoist it to the module's first statement on the next run.
+    if (
+        has_noqa_comment
+        and len(imports) == 1
+        and not first_statement
+        and not preserve_comments_on_statement_line
+        and not config.ignore_comments
+        and config.multi_line_output is not wrap_modes.WrapModes.NOQA
+    ):
+        return import_statement
+
     if (
         # When ``include_trailing_comma`` is enabled isort always appends a
         # trailing comma to multi-line imports.  Combined with
@@ -489,7 +502,9 @@ def _build_grouped_from_imports(
         and not (
             len(imports) == 1
             and comments
-            and not has_noqa_comment
+            # A later statement keeps a `noqa` comment on its name too, see
+            # `_with_from_imports_for_module`.
+            and not (has_noqa_comment and first_statement)
             and not preserve_comments_on_statement_line
         )
     ):
@@ -723,6 +738,15 @@ def _with_from_imports_for_module(
             comments = []
         return output
 
+    # When isort reads its output back, it attaches a comment on the opening line of a `from`
+    # statement to the first statement for the module, unless the statement imports a single name
+    # on one line. So only the first statement may group names under a comment; a later statement
+    # holds either a single commented name or names without comments. The first statement may skip
+    # a name whose pragma comment it cannot share, unless that could move names past aliases or out
+    # of the order in which they were written. After skipping one it stops at the next explanatory
+    # comment, because the comments joined on its opening line may read back as explanatory only.
+    can_defer = not from_import_order and not (config.no_inline_sort or config.only_sections)
+    first_statement = True
     while from_imports:
         # Tracks whether any aliased imports were emitted before the grouped
         # non-aliased imports in this pass of the outer loop.  When True it
@@ -778,8 +802,11 @@ def _with_from_imports_for_module(
             has_explanatory_comments = any(
                 c and not c.lower().startswith(("noqa", "type: ignore")) for c in comments
             )
+            deferred = False
             for grouped_plain_import in from_imports[:]:
                 grouped_comment = nested_comments.get(grouped_plain_import)
+                if not first_statement and (comments or grouped_comment):
+                    break
                 if grouped_comment:
                     grouped_is_pragma = grouped_comment.lower().startswith(("noqa", "type: ignore"))
                     if grouped_is_pragma and (
@@ -787,8 +814,11 @@ def _with_from_imports_for_module(
                         or (pragma_comments and grouped_comment not in pragma_comments)
                         or grouped_comment.lower().startswith("type: ignore")
                     ):
+                        if can_defer:
+                            deferred = True
+                            continue
                         break
-                    if not grouped_is_pragma and pragma_comments:
+                    if not grouped_is_pragma and (pragma_comments or deferred):
                         break
 
                 include_grouped_import = grouped_plain_import in as_imports and not (
@@ -829,10 +859,13 @@ def _with_from_imports_for_module(
             import_start=import_start,
             comments=comments,
             processed_as_imports_this_iteration=processed_as_imports_this_iteration,
-            preserve_comments_on_statement_line=bool(opening_line_comments or combined_as_comments),
+            preserve_comments_on_statement_line=first_statement
+            and bool(opening_line_comments or combined_as_comments),
+            first_statement=first_statement,
         )
         if grouped_from_import_statement:
             output.append(grouped_from_import_statement)
+            first_statement = False
 
         if config.no_inline_sort:
             aliased_from_imports.sort(key=lambda name: from_import_order[f"{module}.{name}"])
