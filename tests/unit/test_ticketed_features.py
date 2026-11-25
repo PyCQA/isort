@@ -1194,11 +1194,44 @@ from package1.a.c import baz
 import os
 
 from package1.a.b import foo
-
 from package1.a.c import baz
 
 from package2 import bar
 """
+    )
+
+
+def test_separate_packages_groups_same_configured_package() -> None:
+    """Imports from one explicitly configured package form a single group.
+
+    The package key for a module matching a known pattern is the pattern's own
+    segments (e.g. ``pkg`` for ``known_third_party=["pkg"]``), so every import
+    under that package is grouped together, exactly like the equivalent
+    unconfigured package.
+    """
+    assert (
+        isort.code(
+            "from pkg.sub import b\nfrom pkg import a\n",
+            separate_packages=["THIRDPARTY"],
+            known_third_party=["pkg"],
+        )
+        == "from pkg import a\nfrom pkg.sub import b\n"
+    )
+    assert (
+        isort.code(
+            "import pkg.b\nimport pkg.a\n",
+            separate_packages=["THIRDPARTY"],
+            known_third_party=["pkg"],
+        )
+        == "import pkg.a\nimport pkg.b\n"
+    )
+    assert (
+        isort.code(
+            "import other\nfrom pkg.sub.mod import b\nfrom pkg.sub import a\n",
+            separate_packages=["THIRDPARTY"],
+            known_third_party=["pkg.sub", "other"],
+        )
+        == "import other\n\nfrom pkg.sub import a\nfrom pkg.sub.mod import b\n"
     )
 
 
