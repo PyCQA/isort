@@ -11,6 +11,7 @@ on [Github](https://github.com/PyCQA/isort/releases).
 
 ### Unreleased
 
+   - Fix `separate_packages` splitting imports from the same configured package (#2812)
    - **Potential breaking change:** Path discovery in Git repositories no longer follows symlinks to targets outside the containing repository, including explicit CLI paths and `find_imports_in_paths` calls (#1788). Internal links and discovery outside Git repositories retain their existing behavior. Direct `sort_file` calls are unchanged.
 
 ### 9.0.0 August 26 2026

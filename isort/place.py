@@ -61,6 +61,23 @@ def _known_pattern(name: str, config: Config) -> tuple[str, str] | None:
     return None
 
 
+def known_pattern_prefix(name: str, config: Config = DEFAULT_CONFIG) -> str | None:
+    """Returns the longest dotted prefix of ``name`` matched by a configured known pattern.
+
+    Unlike :func:`module_with_reason` this ignores which section the pattern
+    points at and only reports the module prefix, so callers can group imports
+    by the package boundary the user configured (e.g. ``pkg`` or ``pkg.sub``).
+    """
+    parts = name.split(".")
+    for first_k in range(len(parts), 0, -1):
+        module_name_to_check = ".".join(parts[:first_k])
+        for pattern, placement in config.known_patterns:
+            if placement in config.sections and pattern.match(module_name_to_check):
+                return module_name_to_check
+
+    return None
+
+
 def _src_path(
     name: str,
     config: Config,

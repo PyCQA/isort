@@ -8,7 +8,7 @@ from isort.format import format_simplified
 from . import _parse_utils, parse, sorting, wrap, wrap_modes
 from .comments import add_to_line as with_comments
 from .identify import STATEMENT_DECLARATIONS
-from .place import module_with_reason
+from .place import known_pattern_prefix, module_with_reason
 from .settings import DEFAULT_CONFIG, Config, format_section_comment
 
 _WRAP_CHARS_TRANSLATION = str.maketrans("", "", "(),\\")
@@ -991,8 +991,9 @@ def _separate_packages(section_output: list[str], config: Config) -> list[str]:
         _, reason = module_with_reason(package_name, config)
 
         if "Matched configured known pattern" in reason:
-            package_depth = len(reason.split(".")) - 1  # minus 1 for re.compile
-            key = ".".join(package_name.split(".")[: package_depth + 1])
+            key = (
+                known_pattern_prefix(package_name, config) or package_name.split(".", maxsplit=1)[0]
+            )
         else:
             key = package_name.split(".", maxsplit=1)[0]
 
