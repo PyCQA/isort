@@ -3276,3 +3276,30 @@ def test_trailing_comma_on_aliased_only_import_does_not_explode_plain_imports_is
     assert isort.code(
         "from requests import (Z as Z,)\n", profile="black", remove_redundant_aliases=True
     ) == ("from requests import (\n    Z,\n)\n")
+
+
+def test_thirdparty_not_identified_as_firstparty_when_root_dir_shares_name_issue_2240(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "some_name"
+    root.mkdir()
+    (root / "pyproject.toml").write_text('[project]\nname = "package_name"\n', "utf-8")
+    pkg = root / "package_name"
+    pkg.mkdir()
+    (pkg / "__init__.py").touch()
+    (pkg / "file1.py").touch()
+
+    config = isort.Config(src_paths=(root / "src", root))
+    source = (
+        "import datetime\n"
+        "import third_party\n"
+        "from package_name.file1 import xyz\n"
+        "from some_name import xyz\n"
+    )
+    expected = (
+        "import datetime\n\n"
+        "import third_party\n"
+        "from some_name import xyz\n\n"
+        "from package_name.file1 import xyz\n"
+    )
+    assert isort.code(source, config=config) == expected
