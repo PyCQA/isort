@@ -454,6 +454,29 @@ def test_as_bool() -> None:
         settings._as_bool("truthy")
 
 
+def test_find_all_configs_ignores_settings_path_overrides(tmp_path: Path) -> None:
+    project = tmp_path / "project"
+    project.mkdir()
+    (project / ".isort.cfg").write_text("[settings]\nprofile=black\n", "utf-8")
+
+    config_trie = settings.find_all_configs(
+        str(tmp_path),
+        {
+            "line_length": 100,
+            "settings_path": str(tmp_path),
+            "settings_file": str(tmp_path / "other.cfg"),
+        },
+    )
+
+    project_config = config_trie.search(str(project / "test.py"))[1]
+    assert project_config["profile"] == "black"
+    assert project_config["line_length"] == 100
+    assert "settings_path" not in project_config
+    assert "settings_file" not in project_config
+
+    assert config_trie.search(str(tmp_path / "test.py")) == ("default", {"line_length": 100})
+
+
 def test_find_all_configs(tmp_path: Path) -> None:
     setup_cfg = """
 [isort]

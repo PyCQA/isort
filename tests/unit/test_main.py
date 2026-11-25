@@ -213,6 +213,36 @@ def test_config_root_interaction_with_resolve_all_configs(tmp_path: Path) -> Non
     main.main([str(python_file), "--config-root", str(tmp_path), "--resolve-all-configs"])
 
 
+def test_resolve_all_configs_applies_command_line_options(tmp_path: Path) -> None:
+    project_a = tmp_path / "project_a"
+    project_b = tmp_path / "project_b"
+    project_a.mkdir()
+    project_b.mkdir()
+    (project_a / ".isort.cfg").write_text("[settings]\nforce_sort_within_sections = true\n")
+    (project_b / ".isort.cfg").write_text("[settings]\nline_length = 100\n")
+    file_a = project_a / "a.py"
+    file_b = project_b / "b.py"
+    file_c = tmp_path / "c.py"
+    for python_file in (file_a, file_b, file_c):
+        python_file.write_text("from os import path, sep\nimport sys\n")
+
+    main.main(
+        [
+            str(file_a),
+            str(file_b),
+            str(file_c),
+            "--force-single-line-imports",
+            "--resolve-all-configs",
+            "--config-root",
+            str(tmp_path),
+        ]
+    )
+
+    assert file_a.read_text() == "from os import path\nfrom os import sep\nimport sys\n"
+    assert file_b.read_text() == "import sys\nfrom os import path\nfrom os import sep\n"
+    assert file_c.read_text() == "import sys\nfrom os import path\nfrom os import sep\n"
+
+
 def test_main(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
     base_args = [
         "--sp",
