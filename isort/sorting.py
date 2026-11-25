@@ -58,6 +58,11 @@ def module_key(
 def section_key(line: str, config: Config) -> str:
     section = "B"
 
+    if line.startswith("lazy "):
+        # PEP 810 lazy import: strip the prefix so the key below matches the
+        # equivalent eager import.
+        line = line[len("lazy ") :]
+
     if (
         not config.sort_relative_in_force_sorted_sections
         and config.reverse_relative
