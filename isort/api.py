@@ -273,11 +273,12 @@ def check_stream(
         color=config.color_output, error=config.format_error, success=config.format_success
     )
     if not changed:
-        if config.verbose and not config.only_modified:
+        if not config.quiet and config.verbose and not config.only_modified:
             printer.success(f"{file_path or ''} Everything Looks Good!")
         return True
 
-    printer.error(f"{file_path or ''} Imports are incorrectly sorted and/or formatted.")
+    if not config.quiet:
+        printer.error(f"{file_path or ''} Imports are incorrectly sorted and/or formatted.")
     if show_diff:
         output_stream = StringIO()
         input_stream.seek(0)
