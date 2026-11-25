@@ -309,6 +309,15 @@ def process(
             in_quote = _scan_quotes(line, stripped_line, in_quote)
 
             not_imports = bool(in_quote) or was_in_quote or in_top_comment or isort_off
+            if (
+                isort_off
+                and in_top_comment
+                and not (in_quote or was_in_quote or skip_file)
+                and stripped_line == "# isort: on"
+            ):
+                # Near the top of the file this line is also read as part of the top comment, which
+                # skips the check below, so it would otherwise never switch isort back on.
+                isort_off = False
             if not (in_quote or was_in_quote or in_top_comment):
                 if isort_off:
                     if not skip_file and stripped_line == "# isort: on":
@@ -492,6 +501,7 @@ def process(
                 add_imports
                 and (stripped_line or end_of_file)
                 and not config.append_only
+                and not isort_off
                 and not in_top_comment
                 and not was_in_quote
                 and not import_section
