@@ -127,14 +127,14 @@ _STR_BOOLEAN_MAPPING = {
 }
 
 
-# TODO: Make this work as native class, see https://github.com/PyCQA/isort/issues/2629
-@mypyc_attr(native_class=False)
 @functools.lru_cache(maxsize=4096)
 def _compile_known_pattern(known_pattern: str) -> Pattern[str]:
     regexp = "^" + known_pattern.replace("*", ".*").replace("?", ".?") + "$"
     return re.compile(regexp)
 
 
+# TODO: Make this work as native class, see https://github.com/PyCQA/isort/issues/2629
+@mypyc_attr(native_class=False)
 @dataclass(frozen=True)
 class _Config:
     """Defines the data schema and defaults used for isort configuration.
