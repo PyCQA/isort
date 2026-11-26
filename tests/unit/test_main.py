@@ -926,6 +926,29 @@ __revision__ = 'יייי'
     _, error = capsys.readouterr()
 
 
+def test_unreadable_file_is_an_error(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A file that cannot be read fails the run instead of only warning about it."""
+    python_file = tmp_path / "file.py"
+    python_file.write_text("import os\n")
+
+    def unreadable(*args: object, **kwargs: object) -> bool:
+        raise PermissionError(f"[Errno 13] Permission denied: '{python_file}'")
+
+    monkeypatch.setattr("isort.main.api.check_file", unreadable)
+
+    with pytest.raises(SystemExit) as error:
+        main.main(["--check", str(python_file)])
+
+    assert error.value.code == 1
+    _, err = capsys.readouterr()
+    assert "Unable to parse file" in err
+    assert "Permission denied" in err
+
+
 def test_stream_skip_file(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     input_with_skip = """
 # isort: skip_file
