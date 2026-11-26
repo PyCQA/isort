@@ -5,6 +5,7 @@ Defines how the default settings for isort should be loaded
 
 import configparser
 import fnmatch
+import functools
 import os
 import re
 import stat
@@ -124,6 +125,12 @@ _STR_BOOLEAN_MAPPING = {
     "0": False,
     "false": False,
 }
+
+
+@functools.lru_cache(maxsize=4096)
+def _compile_known_pattern(known_pattern: str) -> Pattern[str]:
+    regexp = "^" + known_pattern.replace("*", ".*").replace("?", ".?") + "$"
+    return re.compile(regexp)
 
 
 # TODO: Make this work as native class, see https://github.com/PyCQA/isort/issues/2629
@@ -650,8 +657,7 @@ class Config(_Config):
                 for pattern in self._parse_known_pattern(known_pattern)
             ]
             for known_pattern in known_patterns:
-                regexp = "^" + known_pattern.replace("*", ".*").replace("?", ".?") + "$"
-                self._known_patterns.append((re.compile(regexp), placement))
+                self._known_patterns.append((_compile_known_pattern(known_pattern), placement))
 
         return self._known_patterns
 
