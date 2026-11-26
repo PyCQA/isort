@@ -50,15 +50,30 @@ Visit https://isort.readthedocs.io/ for complete information about how to use is
 
 
 class SortAttempt:
-    def __init__(self, incorrectly_sorted: bool, skipped: bool, supported_encoding: bool) -> None:
+    def __init__(
+        self,
+        incorrectly_sorted: bool,
+        skipped: bool,
+        supported_encoding: bool,
+        unable_to_parse: bool = False,
+    ) -> None:
         self.incorrectly_sorted = incorrectly_sorted
         self.skipped = skipped
         self.supported_encoding = supported_encoding
+        self.unable_to_parse = unable_to_parse
 
-    def __reduce__(self) -> tuple[type[SortAttempt], tuple[bool, bool, bool]]:
+    def __reduce__(self) -> tuple[type[SortAttempt], tuple[bool, bool, bool, bool]]:
         # Defined explicitly as mypyc's removal of `__dict__` breaks pickling this class, which is
         # necessary when using multiple jobs.
-        return (self.__class__, (self.incorrectly_sorted, self.skipped, self.supported_encoding))
+        return (
+            self.__class__,
+            (
+                self.incorrectly_sorted,
+                self.skipped,
+                self.supported_encoding,
+                self.unable_to_parse,
+            ),
+        )
 
 
 def _stream_with_preserved_newlines(
@@ -111,8 +126,12 @@ def sort_imports(
             skipped = True
         return SortAttempt(incorrectly_sorted, skipped, True)
     except (OSError, ValueError) as error:
-        warn(f"Unable to parse file {file_name} due to {error}", stacklevel=2)
-        return None
+        _print_hard_fail(
+            config,
+            offending_file=file_name,
+            message=f"Unable to parse file {file_name} due to {error}",
+        )
+        return SortAttempt(incorrectly_sorted, skipped, True, unable_to_parse=True)
     except UnsupportedEncoding:
         if config.verbose:
             warn(f"Encoding not supported for {file_name}", stacklevel=2)
@@ -1064,6 +1083,7 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
     wrong_sorted_files = False
     all_attempt_broken = False
     no_valid_encodings = False
+    unable_to_parse = False
 
     config_trie: Trie | None = None
     if resolve_all_configs:
@@ -1200,6 +1220,9 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
             for sort_attempt in attempt_iterator:
                 if not sort_attempt:
                     continue  # pragma: no cover - shouldn't happen, satisfies type constraint
+                if sort_attempt.unable_to_parse:
+                    unable_to_parse = True
+
                 incorrectly_sorted = sort_attempt.incorrectly_sorted
                 if arguments.get("check", False) and incorrectly_sorted:
                     wrong_sorted_files = True
@@ -1244,6 +1267,9 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
         sys.exit(1)
 
     if all_attempt_broken:
+        sys.exit(1)
+
+    if unable_to_parse:
         sys.exit(1)
 
     if no_valid_encodings:
